@@ -31,3 +31,9 @@ export interface IEditProfile{
     fullName: string,
     birthDate: string,
 }
+
+export interface IGetUserRole {
+    isTeacher: boolean,
+    isStudent: boolean,
+    isAdmin: boolean
+}
