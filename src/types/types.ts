@@ -31,3 +31,13 @@ export interface IEditProfile{
     fullName: string,
     birthDate: string,
 }
+
+export interface IGetUserRole {
+    isTeacher: boolean,
+    isStudent: boolean,
+    isAdmin: boolean
+}
+export interface Group {
+    id: string;
+    name: string;
+}
