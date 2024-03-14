@@ -37,3 +37,7 @@ export interface IGetUserRole {
     isStudent: boolean,
     isAdmin: boolean
 }
+export interface Group {
+    id: string;
+    name: string;
+}

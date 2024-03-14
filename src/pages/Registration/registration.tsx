@@ -44,7 +44,7 @@ const Registration = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "97vh",
+        height: "92vh",
       }}
     >
       <Grid container spacing={2} justifyContent="center">
