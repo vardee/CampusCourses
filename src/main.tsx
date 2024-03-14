@@ -6,10 +6,13 @@ import Registration from './pages/Registration/registration.tsx'
 import Authorization from './pages/Authorization/authorization.tsx'
 import Profile from './pages/Profile/profile.tsx'
 import { Provider } from 'react-redux'
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { store } from './store/store.ts'
-import Courses from './pages/Courses/courses.tsx'
 import MyCourses from './pages/MyCourses/mycourses.tsx'
 import Teaching from './pages/Teaching/teaching.tsx'
+import MainPage from './pages/Main/mainPage.tsx'
+import Groups from './pages/Groups/groups.tsx'
 
 
 const router = createBrowserRouter([
@@ -17,6 +20,10 @@ const router = createBrowserRouter([
     path:"/",
     element:<App />,
     children: [
+      {
+        path:"/",
+        element:<MainPage />
+      },
       {
         path:"/registration",
         element:<Registration />
@@ -30,8 +37,8 @@ const router = createBrowserRouter([
         element:<Profile />
       },
       {
-        path:"/courses",
-        element:<Courses />
+        path:"/groups",
+        element:<Groups />
       },
       {
         path:"/mycourses",
@@ -47,6 +54,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-    <RouterProvider router ={router} />
+    <RouterProvider router ={router} />,
+    <ToastContainer position='bottom-left' autoClose={2000} />,
   </Provider>,
 )

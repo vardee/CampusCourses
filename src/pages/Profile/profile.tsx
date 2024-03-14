@@ -2,6 +2,7 @@ import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IEditProfile, IGetUser } from "../../types/types";
 import { AuthService } from "../../services/auth.service";
+import { toast } from "react-toastify";
 
 
 const Profile = () => {
@@ -33,10 +34,11 @@ const Profile = () => {
             e.preventDefault();
             if (token) {
               await AuthService.editProfile(getUserData);
+              toast.success('Данные успешно поменялись')
               console.log(getUserData)
             }
         } catch (error) {
-          
+          toast.error("Произошла ошибка")
         }
     }
     useEffect(() => {
@@ -49,11 +51,22 @@ const Profile = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "97vh",
       }}
     >
       <Grid container spacing={2} justifyContent="center">
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={6}
+          sx={{
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "20px",
+            maxWidth: "400px", 
+            marginTop: "20px", 
+          }}>
           <Typography variant="h6" gutterBottom>
             Профиль
           </Typography>

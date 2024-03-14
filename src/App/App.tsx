@@ -34,8 +34,9 @@ const App = () => {
     <div className='name'>
 
     <Header />
-    <Outlet />  
-    
+    <Outlet /> 
+
+
     </div>
   
   )

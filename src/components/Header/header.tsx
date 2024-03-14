@@ -56,7 +56,7 @@ const Header = () => {
   }, [emailUser]);
 
   return (
-    <AppBar position="fixed" color="inherit" sx={{ background: "grey" }}>
+    <AppBar position="fixed" color="inherit" sx={{ background: "white" }}>
       <Toolbar>
         <Typography
           variant="h6"
@@ -68,12 +68,12 @@ const Header = () => {
           Кампусные курсы
         </Typography>
         {isAuth && (
-          <Button color="inherit" component={Link} to="/courses">
+          <Button color="inherit" component={Link} to="/groups">
             Группы курсов
           </Button>
         )}
         {isAuth && userRoleData.isStudent && (
-          <Button color="inherit" component={Link} to="/profile">
+          <Button color="inherit" component={Link} to="/mycourses">
             Мои курсы
           </Button>
         )}
