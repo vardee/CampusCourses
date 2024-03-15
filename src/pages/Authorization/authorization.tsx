@@ -1,16 +1,16 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { useAppDispatch } from '../../store/hooks';
-import { useNavigate } from 'react-router-dom';
-import { AuthService } from '../../services/auth.service';
-import { setTokenFromLocalStorage } from '../../helpers/localstorage.helper';
-import { login } from '../../store/user/userSlice';
-import { validationLoginSchema } from '../../helpers/validation.schemas';
-import { initialLoginValues } from '../../components/InitialValues/initialValues';
+import React from "react";
+import { useFormik } from "formik";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { useAppDispatch } from "../../store/hooks";
+import { useNavigate } from "react-router-dom";
+import { AuthService } from "../../services/auth.service";
+import { setTokenFromLocalStorage } from "../../helpers/localstorage.helper";
+import { login } from "../../store/user/userSlice";
+import { validationLoginSchema } from "../../helpers/validation.schemas";
+import { initialLoginValues } from "../../components/InitialValues/initialValues";
 
 const Authorization = () => {
   const dispatch = useAppDispatch();
@@ -23,20 +23,20 @@ const Authorization = () => {
       try {
         const data = await AuthService.login(values);
         if (data) {
-          setTokenFromLocalStorage('token', data.token);
-          localStorage.setItem('email', values.email);
+          setTokenFromLocalStorage("token", data.token);
+          localStorage.setItem("email", values.email);
           dispatch(login());
-          navigate('/');
+          navigate("/");
         }
       } catch (err: any) {
-        const errorMessage = err.response?.data.message || 'Что-то пошло не так';
+        const errorMessage =
+          err.response?.data.message || "Что-то пошло не так";
         setErrors({ email: errorMessage });
       } finally {
         setSubmitting(false);
       }
     },
   });
-  
 
   return (
     <div
@@ -57,9 +57,10 @@ const Authorization = () => {
             border: "1px solid #ccc",
             borderRadius: "8px",
             padding: "20px",
-            maxWidth: "400px", 
-            marginTop: "20px", 
-          }}>
+            maxWidth: "400px",
+            marginTop: "20px",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Авторизация
           </Typography>
@@ -72,7 +73,7 @@ const Authorization = () => {
                   id="email"
                   label="Email"
                   autoComplete="email"
-                  {...formik.getFieldProps('email')}
+                  {...formik.getFieldProps("email")}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
                 />
@@ -85,8 +86,10 @@ const Authorization = () => {
                   type="password"
                   id="password"
                   autoComplete="current-password"
-                  {...formik.getFieldProps('password')}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  {...formik.getFieldProps("password")}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
                   helperText={formik.touched.password && formik.errors.password}
                 />
               </Grid>

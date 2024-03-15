@@ -1,26 +1,31 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { GroupsService } from "../../services/groups.service";
-import { Group, IGetUserRole } from "../../types/types";
+import { Group, IGetUserRole} from "../../types/types";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
   Grid,
-  Stack,
   Typography,
+  Modal,
+  Box,
+  TextField,
 } from "@mui/material";
 import { AuthService } from "../../services/auth.service";
 
 const Groups = () => {
-  const initialGroups: Group[] = [{ id: "", name: "" }];
+  const initialGroups: Group[] = [];
   const initialGetUserData: IGetUserRole = {
     isTeacher: false,
     isStudent: false,
     isAdmin: false,
   };
   const [userRoleData, setUserRoleData] = useState<IGetUserRole>(initialGetUserData);
+  const [groups, setGroups] = useState<Group[]>(initialGroups);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
 
   const getUserRole = async () => {
     const token = localStorage.getItem("token");
@@ -34,34 +39,50 @@ const Groups = () => {
     } catch (error) {}
   };
 
-  const [groups, setGroups] = useState<Group[]>(initialGroups);
-
-  const getGroupsList = async () => {
-    const token = localStorage.getItem("token");
+  const createGroup = async () => {
     try {
-      if (token) {
-        const groupsList = await GroupsService.getGroups();
-        setGroups(groupsList);
-      } else {
-        toast.error("Вы не можете выполнить это, вы не авторизованы");
-      }
+      await GroupsService.createNewGroup({ name: newGroupName });
+      setIsModalOpen(false);
+      toast.success("Группа успешно создана");
+      setNewGroupName("");
+      getGroupsList();
     } catch (error) {
       console.error(error);
+      toast.error("Ошибка при создании группы");
+    }
+  };
+
+  const getGroupsList = async () => {
+    try {
+      const groupsList = await GroupsService.getGroups();
+      setGroups(groupsList);
+    } catch (error) {
+      console.error(error);
+      toast.error("Ошибка при загрузке списка групп");
     }
   };
 
   useEffect(() => {
-    getGroupsList();
     getUserRole();
+    getGroupsList();
   }, []);
 
   const handleEdit = (groupId: string) => {
     console.log(`Редактирование группы с ID ${groupId}`);
   };
 
-  const handleDelete = (groupId: string) => {
-    console.log(`Удаление группы с ID ${groupId}`);
+  const handleDeleteGroup = async (groupId: string) => {
+    try {
+      await GroupsService.deleteGroup({ id: groupId });
+      const updatedGroups = groups.filter((group) => group.id !== groupId);
+      setGroups(updatedGroups);
+      toast.success("Группа успешно удалена");
+    } catch (error) {
+      console.error("Ошибка при удалении группы:", error);
+      toast.error("Ошибка при удалении группы");
+    }
   };
+  
 
   return (
     <Grid
@@ -79,6 +100,11 @@ const Groups = () => {
       >
         Группы кампусных курсов
       </Typography>
+      {userRoleData.isAdmin && (
+        <Button variant="contained" onClick={() => setIsModalOpen(true)}>
+          Создать
+        </Button>
+      )}
       {groups.map((group) => (
         <Grid item key={group.id} style={{ width: "100%", maxWidth: 1000 }}>
           <Card>
@@ -92,7 +118,7 @@ const Groups = () => {
               <Typography variant="h5" component="div">
                 {group.name}
               </Typography>
-              {userRoleData.isAdmin && ( 
+              {userRoleData.isAdmin && (
                 <CardActions
                   style={{
                     flexDirection: "column",
@@ -100,15 +126,19 @@ const Groups = () => {
                     flexWrap: "wrap",
                   }}
                 >
-                  <Button color="inherit"  sx={{ background: "orange", marginBottom: '8px'}}
+                  <Button
+                    color="inherit"
+                    sx={{ background: "orange", marginBottom: "8px" }}
                     size="small"
                     onClick={() => handleEdit(group.id)}
                   >
                     Редактировать
                   </Button>
-                  <Button color="inherit" sx={{ background: "red" }}
+                  <Button
+                    color="inherit"
+                    sx={{ background: "red" }}
                     size="small"
-                    onClick={() => handleDelete(group.id)}
+                    onClick={() => handleDeleteGroup(group.id)}
                   >
                     Удалить
                   </Button>
@@ -118,6 +148,35 @@ const Groups = () => {
           </Card>
         </Grid>
       ))}
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Создание новой группы
+          </Typography>
+          <TextField
+            label="Имя группы"
+            variant="outlined"
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+            fullWidth
+            autoFocus
+          />
+          <Button onClick={createGroup} variant="contained" sx={{ mt: 2 }}>
+            Создать
+          </Button>
+        </Box>
+      </Modal>
     </Grid>
   );
 };

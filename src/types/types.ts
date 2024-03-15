@@ -41,3 +41,11 @@ export interface Group {
     id: string;
     name: string;
 }
+
+export interface ICreateGroupData{
+    name: string,
+}
+
+export interface IDeleteGroup{
+    id: string,
+}

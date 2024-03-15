@@ -1,3 +1,5 @@
+import { ICreateGroupData, IDeleteGroup } from "../../types/types"
+
 export const initialRegisterScheme ={
     fullName: '',
     birthDate: '',
@@ -8,4 +10,10 @@ export const initialRegisterScheme ={
 export const initialLoginValues = {
     email: '',
     password: '',
+}
+export const initialCreateGroupData: ICreateGroupData = {
+    name: ''
+}
+export const initialDeleteGroupData: IDeleteGroup = {
+    id: ''
 }
