@@ -13,6 +13,7 @@ import MyCourses from './pages/MyCourses/mycourses.tsx'
 import Teaching from './pages/Teaching/teaching.tsx'
 import MainPage from './pages/Main/mainPage.tsx'
 import Groups from './pages/Groups/groups.tsx'
+import GroupPage from './pages/GroupPage/groupPage.tsx'
 
 
 const router = createBrowserRouter([
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path:"/courses/teaching",
         element:<Teaching />
+      },
+      {
+        path:"/groups/:id",
+        element:<GroupPage />
       },
     ],
   },

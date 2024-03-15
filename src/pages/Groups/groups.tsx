@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { GroupsService } from "../../services/groups.service";
-import { Group, IGetUserRole} from "../../types/types";
+import { Group, IGetUserRole } from "../../types/types";
 import {
   Button,
   Card,
@@ -14,6 +14,7 @@ import {
   TextField,
 } from "@mui/material";
 import { AuthService } from "../../services/auth.service";
+import { Link } from "react-router-dom";
 
 const Groups = () => {
   const initialGroups: Group[] = [];
@@ -22,7 +23,8 @@ const Groups = () => {
     isStudent: false,
     isAdmin: false,
   };
-  const [userRoleData, setUserRoleData] = useState<IGetUserRole>(initialGetUserData);
+  const [userRoleData, setUserRoleData] =
+    useState<IGetUserRole>(initialGetUserData);
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
@@ -82,7 +84,6 @@ const Groups = () => {
       toast.error("Ошибка при удалении группы");
     }
   };
-  
 
   return (
     <Grid
@@ -93,18 +94,26 @@ const Groups = () => {
       alignItems="center"
       style={{ marginTop: "100px" }}
     >
-      <Typography
-        variant="h4"
-        gutterBottom
-        style={{ maxWidth: "100%", fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}
+      <Grid
+        container
+        item
+        justifyContent="space-between"
+        alignItems="center"
+        style={{ width: "100%", maxWidth: 1000 }}
       >
-        Группы кампусных курсов
-      </Typography>
-      {userRoleData.isAdmin && (
-        <Button variant="contained" onClick={() => setIsModalOpen(true)}>
-          Создать
-        </Button>
-      )}
+        <Typography
+          variant="h4"
+          gutterBottom
+          style={{ maxWidth: "100%", fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}
+        >
+          Группы кампусных курсов
+        </Typography>
+        {userRoleData.isAdmin && (
+          <Button variant="contained" onClick={() => setIsModalOpen(true)}>
+            Создать
+          </Button>
+        )}
+      </Grid>
       {groups.map((group) => (
         <Grid item key={group.id} style={{ width: "100%", maxWidth: 1000 }}>
           <Card>
@@ -116,7 +125,12 @@ const Groups = () => {
               }}
             >
               <Typography variant="h5" component="div">
-                {group.name}
+                <Link
+                  to={`/groups/${group.id}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  {group.name}
+                </Link>
               </Typography>
               {userRoleData.isAdmin && (
                 <CardActions
@@ -151,14 +165,17 @@ const Groups = () => {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
+            position: "fixed",
+            top: "20%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: "90%",
+            maxWidth: 400,
+            maxHeight: "90%",
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
+            overflowY: "auto",
           }}
         >
           <Typography variant="h6" gutterBottom>

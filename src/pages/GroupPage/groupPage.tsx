@@ -1,5 +1,5 @@
 
-const MyCourses = () => {
+const GroupPage = () => {
 
     return (
       <div
@@ -10,10 +10,10 @@ const MyCourses = () => {
         height: "92vh",
       }}
     >
-      MyCourses
+      GroupPage
     </div>
     )
   }
   
-  export default MyCourses
+  export default GroupPage
   
