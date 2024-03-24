@@ -1,4 +1,4 @@
-import { ICreateGroupData, IDeleteGroup, IGetUserRole } from "../../types/types"
+import { CourseDetails, ICreateGroupData, IDeleteGroup, IGetUserRole } from "../../types/types"
 
 export const initialRegisterScheme ={
     fullName: '',
@@ -22,3 +22,18 @@ export const initialGetRoleData: IGetUserRole = {
     isStudent: false,
     isAdmin: false,
 };
+export const initialCourseDetailsData: CourseDetails = {
+    id: '',
+    name: '',
+    startYear: '',
+    maximumStudentsCount: '',
+    studentsEnrolledCount: '',
+    studentsInQueueCount: '',
+    requirements: '',
+    annotations: '',
+    status: '',
+    semester: '',
+    students: [],
+    teachers: [],
+    notifications: []
+}

@@ -74,3 +74,37 @@ export interface CreateCourse {
     annotations: string,
     mainTeacherId: string
 }
+
+
+interface Students{
+    id: string,
+    name: string,
+    email: string,
+    status: string,
+    midtermResult: string,
+    finalResult: string
+}
+interface Teachers{
+    name: string,
+    email: string,
+    isMain: boolean
+}
+interface Notifications{
+    text: string,
+    isImportant: boolean
+}
+export interface CourseDetails{
+    id: string,
+    name: string,
+    startYear: string,
+    maximumStudentsCount: string,
+    studentsEnrolledCount: string,
+    studentsInQueueCount: string,
+    requirements: string,
+    annotations: string,
+    status: string,
+    semester: string,
+    students: Students[],
+    teachers: Teachers[],
+    notifications: Notifications[]
+}

@@ -34,8 +34,7 @@ import {
   translateCourseStatus,
   translateSemester,
 } from "../../helpers/validators/translator";
-import { Formik, Form, Field, useFormik } from "formik";
-import * as Yup from "yup";
+import { useFormik } from "formik";
 import { validationCreateCourseSchema } from "../../helpers/validation.schemas";
 
 const GroupPage = () => {
@@ -48,22 +47,11 @@ const GroupPage = () => {
   const [groupName, setGroupName] = useState<string>("");
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newCourseName, setNewCourseName] = useState("");
-  const [startYear, setStartYear] = useState("");
-  const [maximumStudentsCount, setMaximumStudentsCount] = useState("");
-  const [semester, setSemester] = useState("");
-  const [requirements, setRequirements] = useState("");
-  const [annotations, setAnnotations] = useState("");
-  const [selectedTeacher, setSelectedTeacher] = useState("");
-
-  const handleTeacherChange = (event: SelectChangeEvent<string>) => {
-    setSelectedTeacher(event.target.value);
-  };
 
   const getUsers = async () => {
     const token = localStorage.getItem("token");
     try {
-      if (token && userRoleData.isAdmin) {
+      if (token) {
         const usersList = await AuthService.getUsers();
         if (usersList) {
           setUsers(usersList);
@@ -117,51 +105,6 @@ const GroupPage = () => {
     }
   };
 
-  useEffect(() => {
-    getGroupCourses();
-    getGroupsList();
-    getUserRole();
-    getUsers();
-  }, []);
-
-  const handleEditorChange = (field: string) => (html: string) => {
-    switch (field) {
-      case "requirements":
-        setRequirements(html);
-        break;
-      case "annotations":
-        setAnnotations(html);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const createCourse = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      if (token && userRoleData.isAdmin) {
-        const mainTeacherId = selectedTeacher;
-        const createNewCourseData = {
-          name: newCourseName,
-          startYear: startYear,
-          maximumStudentsCount: maximumStudentsCount,
-          semester: semester,
-          requirements: requirements,
-          annotations: annotations,
-          mainTeacherId: mainTeacherId,
-        };
-
-        await CourseService.createNewCourse(id, createNewCourseData);
-        setIsCreateModalOpen(false);
-        getGroupCourses();
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Ошибка при создании курса");
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
       newCourseName: "",
@@ -173,10 +116,37 @@ const GroupPage = () => {
       selectedTeacher: "",
     },
     validationSchema: validationCreateCourseSchema,
-    onSubmit: () => {
-      createCourse();
+    onSubmit: async (values) => {
+      const token = localStorage.getItem("token");
+      try {
+        if (token && userRoleData.isAdmin) {
+          const createNewCourseData = {
+            name: values.newCourseName,
+            startYear: values.startYear,
+            maximumStudentsCount: values.maximumStudentsCount,
+            semester: values.semester,
+            requirements: values.requirements,
+            annotations: values.annotations,
+            mainTeacherId: values.selectedTeacher,
+          };
+
+          await CourseService.createNewCourse(id, createNewCourseData);
+          setIsCreateModalOpen(false);
+          getGroupCourses();
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Ошибка при создании курса");
+      }
     },
   });
+
+  useEffect(() => {
+    getGroupCourses();
+    getGroupsList();
+    getUserRole();
+    getUsers();
+  }, []);
 
   return (
     <Grid
@@ -297,9 +267,7 @@ const GroupPage = () => {
               autoFocus
               {...formik.getFieldProps("newCourseName")}
               error={
-                formik.touched.newCourseName && formik.errors.newCourseName
-                  ? true
-                  : false
+                !!(formik.touched.newCourseName && formik.errors.newCourseName)
               }
               helperText={
                 formik.touched.newCourseName && formik.errors.newCourseName
@@ -313,11 +281,7 @@ const GroupPage = () => {
               variant="outlined"
               fullWidth
               {...formik.getFieldProps("startYear")}
-              error={
-                formik.touched.startYear && formik.errors.startYear
-                  ? true
-                  : false
-              }
+              error={!!(formik.touched.startYear && formik.errors.startYear)}
               helperText={formik.touched.startYear && formik.errors.startYear}
             />
             <Typography gutterBottom sx={{ mt: 2 }}>
@@ -329,10 +293,10 @@ const GroupPage = () => {
               fullWidth
               {...formik.getFieldProps("maximumStudentsCount")}
               error={
-                formik.touched.maximumStudentsCount &&
-                formik.errors.maximumStudentsCount
-                  ? true
-                  : false
+                !!(
+                  formik.touched.maximumStudentsCount &&
+                  formik.errors.maximumStudentsCount
+                )
               }
               helperText={
                 formik.touched.maximumStudentsCount &&
@@ -367,7 +331,7 @@ const GroupPage = () => {
             <ReactQuill
               theme="snow"
               value={formik.values.requirements}
-              onChange={handleEditorChange("requirements")}
+              onChange={(value) => formik.setFieldValue("requirements", value)}
             />
             <Typography gutterBottom sx={{ mt: 2 }}>
               Аннотации
@@ -375,17 +339,17 @@ const GroupPage = () => {
             <ReactQuill
               theme="snow"
               value={formik.values.annotations}
-              onChange={handleEditorChange("annotations")}
+              onChange={(value) => formik.setFieldValue("annotations", value)}
             />
             <Typography gutterBottom sx={{ mt: 2 }}>
               Основной преподаватель курса
             </Typography>
             <Select
               value={formik.values.selectedTeacher}
-              onChange={handleTeacherChange}
+              onChange={formik.handleChange}
               fullWidth
               variant="outlined"
-              name="selectedTeacher"
+              name="selectedTeacher" 
             >
               {users.map((user) => (
                 <MenuItem key={user.id} value={user.id}>
