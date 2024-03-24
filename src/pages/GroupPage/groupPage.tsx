@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -34,6 +34,9 @@ import {
   translateCourseStatus,
   translateSemester,
 } from "../../helpers/validators/translator";
+import { Formik, Form, Field, useFormik } from "formik";
+import * as Yup from "yup";
+import { validationCreateCourseSchema } from "../../helpers/validation.schemas";
 
 const GroupPage = () => {
   const { id } = useParams<{ id?: string }>();
@@ -60,7 +63,7 @@ const GroupPage = () => {
   const getUsers = async () => {
     const token = localStorage.getItem("token");
     try {
-      if (token) {
+      if (token && userRoleData.isAdmin) {
         const usersList = await AuthService.getUsers();
         if (usersList) {
           setUsers(usersList);
@@ -137,7 +140,7 @@ const GroupPage = () => {
   const createCourse = async () => {
     const token = localStorage.getItem("token");
     try {
-      if (token) {
+      if (token && userRoleData.isAdmin) {
         const mainTeacherId = selectedTeacher;
         const createNewCourseData = {
           name: newCourseName,
@@ -158,6 +161,22 @@ const GroupPage = () => {
       toast.error("Ошибка при создании курса");
     }
   };
+
+  const formik = useFormik({
+    initialValues: {
+      newCourseName: "",
+      startYear: "",
+      maximumStudentsCount: "",
+      semester: "",
+      requirements: "",
+      annotations: "",
+      selectedTeacher: "",
+    },
+    validationSchema: validationCreateCourseSchema,
+    onSubmit: () => {
+      createCourse();
+    },
+  });
 
   return (
     <Grid
@@ -224,12 +243,14 @@ const GroupPage = () => {
               <Typography variant="body1">
                 Учебный год - {course.startYear}
               </Typography>
-              <Typography
-                variant="body1"
-              >
+              <Typography variant="body1">
                 Семестр - {translateSemester(course.semester)}
               </Typography>
-              <Typography variant="body1" style={{ color: "grey" }} sx={{ mt: 2 }}>
+              <Typography
+                variant="body1"
+                style={{ color: "grey" }}
+                sx={{ mt: 2 }}
+              >
                 Мест всего -{" "}
                 <span style={{ fontSize: "0.9em" }}>
                   {course.maximumStudentsCount}
@@ -264,95 +285,119 @@ const GroupPage = () => {
             overflowY: "auto",
           }}
         >
-          <Typography variant="h6" gutterBottom>
-            Создание курса
-          </Typography>
-          <Typography gutterBottom>Название курса</Typography>
-          <TextField
-            label="Название"
-            variant="outlined"
-            value={newCourseName}
-            onChange={(e) => setNewCourseName(e.target.value)}
-            fullWidth
-            autoFocus
-          />
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Год начала курса
-          </Typography>
-          <TextField
-            label="Год"
-            variant="outlined"
-            value={startYear}
-            onChange={(e) => setStartYear(e.target.value)}
-            fullWidth
-          />
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Общее количество мест
-          </Typography>
-          <TextField
-            label="Количество"
-            variant="outlined"
-            value={maximumStudentsCount}
-            onChange={(e) => setMaximumStudentsCount(e.target.value)}
-            fullWidth
-          />
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Семестр
-          </Typography>
-          <RadioGroup
-            aria-label="semester"
-            name="semester"
-            value={semester}
-            onChange={(e) => setSemester(e.target.value as "Autumn" | "Spring")}
-            row
-          >
-            <FormControlLabel
-              value="Autumn"
-              control={<Radio />}
-              label="Осенний"
+          <form onSubmit={formik.handleSubmit}>
+            <Typography variant="h6" gutterBottom>
+              Создание курса
+            </Typography>
+            <Typography gutterBottom>Название курса</Typography>
+            <TextField
+              label="Название"
+              variant="outlined"
+              fullWidth
+              autoFocus
+              {...formik.getFieldProps("newCourseName")}
+              error={
+                formik.touched.newCourseName && formik.errors.newCourseName
+                  ? true
+                  : false
+              }
+              helperText={
+                formik.touched.newCourseName && formik.errors.newCourseName
+              }
             />
-            <FormControlLabel
-              value="Spring"
-              control={<Radio />}
-              label="Весенний"
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Год начала курса
+            </Typography>
+            <TextField
+              label="Год"
+              variant="outlined"
+              fullWidth
+              {...formik.getFieldProps("startYear")}
+              error={
+                formik.touched.startYear && formik.errors.startYear
+                  ? true
+                  : false
+              }
+              helperText={formik.touched.startYear && formik.errors.startYear}
             />
-          </RadioGroup>
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Общее количество мест
+            </Typography>
+            <TextField
+              label="Количество"
+              variant="outlined"
+              fullWidth
+              {...formik.getFieldProps("maximumStudentsCount")}
+              error={
+                formik.touched.maximumStudentsCount &&
+                formik.errors.maximumStudentsCount
+                  ? true
+                  : false
+              }
+              helperText={
+                formik.touched.maximumStudentsCount &&
+                formik.errors.maximumStudentsCount
+              }
+            />
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Семестр
+            </Typography>
+            <RadioGroup
+              aria-label="semester"
+              name="semester"
+              value={formik.values.semester}
+              onChange={formik.handleChange}
+              row
+            >
+              <FormControlLabel
+                value="Autumn"
+                control={<Radio />}
+                label="Осенний"
+              />
+              <FormControlLabel
+                value="Spring"
+                control={<Radio />}
+                label="Весенний"
+              />
+            </RadioGroup>
 
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Требования
-          </Typography>
-          <ReactQuill
-            theme="snow"
-            value={requirements}
-            onChange={handleEditorChange("requirements")}
-          />
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Аннотации
-          </Typography>
-          <ReactQuill
-            theme="snow"
-            value={annotations}
-            onChange={handleEditorChange("annotations")}
-          />
-          <Typography gutterBottom sx={{ mt: 2 }}>
-            Основной преподаватель курса
-          </Typography>
-          <Select
-            value={selectedTeacher}
-            onChange={handleTeacherChange}
-            fullWidth
-            variant="outlined"
-          >
-            {users.map((user) => (
-              <MenuItem key={user.id} value={user.id}>
-                {user.fullName}
-              </MenuItem>
-            ))}
-          </Select>
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Требования
+            </Typography>
+            <ReactQuill
+              theme="snow"
+              value={formik.values.requirements}
+              onChange={formik.handleChange("requirements")}
+            />
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Аннотации
+            </Typography>
+            <ReactQuill
+              theme="snow"
+              value={formik.values.annotations}
+              onChange={formik.handleChange("annotations")}
+            />
+            <Typography gutterBottom sx={{ mt: 2 }}>
+              Основной преподаватель курса
+            </Typography>
+            <Select
+              value={formik.values.selectedTeacher}
+              onChange={formik.handleChange}
+              fullWidth
+              variant="outlined"
+              name="selectedTeacher"
+            >
+              {users.map((user) => (
+                <MenuItem key={user.id} value={user.id}>
+                  {user.fullName}
+                </MenuItem>
+              ))}
+            </Select>
 
-          <Button onClick={createCourse} variant="contained" sx={{ mt: 2 }}>
-            Создать
-          </Button>
+            <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+              Создать
+            </Button>
+          </form>
         </Box>
       </Modal>
     </Grid>
