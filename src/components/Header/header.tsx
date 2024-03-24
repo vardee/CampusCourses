@@ -1,4 +1,17 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useAppDispatch } from "../../store/hooks";
@@ -6,6 +19,7 @@ import { logout } from "../../store/user/userSlice";
 import { AuthService } from "../../services/auth.service";
 import { useEffect, useState } from "react";
 import { IGetUserRole } from "../../types/types";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Header = () => {
   const isAuth = useAuth();
@@ -16,9 +30,18 @@ const Header = () => {
   const initialGetUserData: IGetUserRole = {
     isTeacher: false,
     isStudent: false,
-    isAdmin: false
-};
-  const [userRoleData, setUserRoleData] = useState<IGetUserRole>(initialGetUserData);
+    isAdmin: false,
+  };
+  const [userRoleData, setUserRoleData] =
+    useState<IGetUserRole>(initialGetUserData);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const toggleDrawer = (open: boolean) => () => {
+    setIsDrawerOpen(open);
+  };
 
   const logoutHandler = async () => {
     const token = localStorage.getItem("token");
@@ -36,19 +59,17 @@ const Header = () => {
     }
   };
 
-  const getUserRole = async() =>{
+  const getUserRole = async () => {
     const token = localStorage.getItem("token");
     try {
-        if(token){
-            const userRole = await AuthService.getUserRole();
-            if(userRole){
-                setUserRoleData(userRole);
-            }
+      if (token) {
+        const userRole = await AuthService.getUserRole();
+        if (userRole) {
+          setUserRoleData(userRole);
         }
-    } catch (error) {
-        
-    }
-  }
+      }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     setUserData(emailUser);
@@ -58,50 +79,139 @@ const Header = () => {
   return (
     <AppBar position="fixed" color="inherit" sx={{ background: "white" }}>
       <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          color="inherit"
-          style={{ textDecoration: "none" }}
-        >
-          Кампусные курсы
-        </Typography>
-        {isAuth && (
-          <Button color="inherit" component={Link} to="/groups">
-            Группы курсов
-          </Button>
-        )}
-        {isAuth && userRoleData.isStudent && (
-          <Button color="inherit" component={Link} to="/mycourses">
-            Мои курсы
-          </Button>
-        )}
-        {isAuth && userRoleData.isTeacher && (
-          <Button color="inherit" component={Link} to="/courses/teaching">
-            Преподаваемые курсы
-          </Button>
-        )}
-        <Box sx={{ flexGrow: 1 }} />
-        {isAuth ? (
+        {!isSmallScreen && (
           <>
-            <Button color="inherit" component={Link} to="/profile">
-              {userData}
-            </Button>
-            <Button color="inherit" onClick={logoutHandler}>
-              Выход
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button component={Link} to="/registration" color="inherit">
-              Регистрация
-            </Button>
-            <Button component={Link} to="/authorization" color="inherit">
-              Вход
-            </Button>
+            <Typography
+              variant="h6"
+              component={Link}
+              to="/"
+              color="inherit"
+              style={{ textDecoration: "none" }}
+            >
+              Кампусные курсы
+            </Typography>
+            {isAuth && (
+              <Button color="inherit" component={Link} to="/groups">
+                Группы курсов
+              </Button>
+            )}
+            {isAuth && userRoleData.isStudent && (
+              <Button color="inherit" component={Link} to="/mycourses">
+                Мои курсы
+              </Button>
+            )}
+            {isAuth && userRoleData.isTeacher && (
+              <Button color="inherit" component={Link} to="/courses/teaching">
+                Преподаваемые курсы
+              </Button>
+            )}
+            <Box sx={{ flexGrow: 1 }} />
+            {isAuth ? (
+              <>
+                <Button color="inherit" component={Link} to="/profile">
+                  {userData}
+                </Button>
+                <Button color="inherit" onClick={logoutHandler}>
+                  Выход
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button component={Link} to="/registration" color="inherit">
+                  Регистрация
+                </Button>
+                <Button component={Link} to="/authorization" color="inherit">
+                  Вход
+                </Button>
+              </>
+            )}
           </>
         )}
+        {isSmallScreen && (
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={toggleDrawer(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component={Link}
+              to="/"
+              color="inherit"
+              style={{ textDecoration: "none" }}
+            >
+              Кампусные курсы
+            </Typography>
+          </Box>
+        )}
+        <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+          <List>
+            {isAuth && (
+              <ListItemButton
+                onClick={toggleDrawer(false)}
+                component={Link}
+                to="/groups"
+              >
+                <ListItemText primary="Группы курсов" />
+              </ListItemButton>
+            )}
+            {isAuth && userRoleData.isStudent && (
+              <ListItemButton
+                onClick={toggleDrawer(false)}
+                component={Link}
+                to="/mycourses"
+              >
+                <ListItemText primary="Мои курсы" />
+              </ListItemButton>
+            )}
+            {isAuth && userRoleData.isTeacher && (
+              <ListItemButton
+                onClick={toggleDrawer(false)}
+                component={Link}
+                to="/courses/teaching"
+              >
+                <ListItemText primary="Преподаваемые курсы" />
+              </ListItemButton>
+            )}
+            {isAuth ? (
+              <>
+                <ListItemButton
+                  onClick={toggleDrawer(false)}
+                  component={Link}
+                  to="/profile"
+                >
+                  <ListItemText primary={userData} />
+                </ListItemButton>
+                <ListItemButton onClick={logoutHandler}>
+                  <ListItemText primary="Выход" />
+                </ListItemButton>
+              </>
+            ) : (
+              <>
+                <ListItemButton
+                  onClick={toggleDrawer(false)}
+                  component={Link}
+                  to="/registration"
+                >
+                  <ListItemText primary="Регистрация" />
+                </ListItemButton>
+                <ListItemButton
+                  onClick={toggleDrawer(false)}
+                  component={Link}
+                  to="/authorization"
+                >
+                  <ListItemText primary="Вход" />
+                </ListItemButton>
+              </>
+            )}
+          </List>
+        </Drawer>
       </Toolbar>
     </AppBar>
   );
