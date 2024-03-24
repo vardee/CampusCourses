@@ -1,18 +1,22 @@
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid, Typography, Button, Tabs, Tab } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { initialCourseDetailsData } from "../../components/InitialValues/initialValues";
-import { CourseDetails } from "../../types/types";
+import { CourseDetails, Notifications } from "../../types/types";
 import { CourseService } from "../../services/course.service";
 import { toast } from "react-toastify";
-import { translateCourseStatus, translateSemester } from "../../helpers/validators/translator";
+import {
+  translateCourseStatus,
+  translateSemester,
+} from "../../helpers/validators/translator";
 
 const CoursePage = () => {
   const { id } = useParams<{ id?: string }>();
   const [courseDetails, setCourseDetails] = useState<CourseDetails>(
     initialCourseDetailsData
   );
-
+  const [notifications, setNotifications] = useState<Notifications[]>([]);
+  const [tabValue, setTabValue] = useState(0);
   const getCourseDetails = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -20,6 +24,7 @@ const CoursePage = () => {
         const courseDeatilsData = await CourseService.getCourseDetails(id);
         if (courseDeatilsData) {
           setCourseDetails(courseDeatilsData);
+          setNotifications(courseDeatilsData.notifications);
         }
       }
     } catch (error) {
@@ -31,7 +36,9 @@ const CoursePage = () => {
   useEffect(() => {
     getCourseDetails();
   }, []);
-
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setTabValue(newValue);
+  };
   return (
     <Grid
       container
@@ -63,14 +70,18 @@ const CoursePage = () => {
           maxWidth: 1000,
         }}
       >
-        <Typography variant="h5" style={{ marginRight: "auto" }}>
-          Статус курса: {translateCourseStatus(courseDetails.status)}
-        </Typography>
+        <Grid item>
+          <Typography variant="body1" fontWeight="bold">
+            Статус курса
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {translateCourseStatus(courseDetails.status)}
+          </Typography>
+        </Grid>
         <Button variant="contained" color="primary">
           Изменить
         </Button>
       </Grid>
-
       <Grid
         container
         item
@@ -85,8 +96,53 @@ const CoursePage = () => {
           maxWidth: 1000,
         }}
       >
-        <Typography variant="h5">Учебный год: {courseDetails.startYear}</Typography>
-        <Typography variant="h5">Семестр {translateSemester(courseDetails.semester)}</Typography>
+        <Grid item>
+          <Typography variant="body1" fontWeight="bold">
+            Учебный год
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {courseDetails.startYear}
+          </Typography>
+        </Grid>
+        <Grid item xs={6} style={{ textAlign: "center" }}>
+          <Typography variant="body1" fontWeight="bold">
+            Семестр
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {translateSemester(courseDetails.semester)}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="space-between"
+        alignItems="center"
+        style={{
+          border: "1px solid #ccc",
+          padding: "10px",
+          marginBottom: "0px",
+          width: "100%",
+          maxWidth: 1000,
+        }}
+      >
+        <Grid item>
+          <Typography variant="body1" fontWeight="bold">
+            Всего мест
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {courseDetails.maximumStudentsCount}
+          </Typography>
+        </Grid>
+        <Grid item xs={6} style={{ textAlign: "center" }}>
+          <Typography variant="body1" fontWeight="bold">
+            Студентов зачислено
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {courseDetails.studentsEnrolledCount}
+          </Typography>
+        </Grid>
       </Grid>
 
       <Grid
@@ -103,26 +159,119 @@ const CoursePage = () => {
           maxWidth: 1000,
         }}
       >
-        <Typography variant="h5">Мест всего: {courseDetails.maximumStudentsCount}</Typography>
-        <Typography variant="h5">Студентов зачислено: {courseDetails.studentsEnrolledCount}</Typography>
+        <Grid item>
+          <Typography variant="body1" fontWeight="bold">
+            Заявок на рассмотрении
+          </Typography>
+          <Typography variant="body1" style={{ marginTop: 5 }}>
+            {courseDetails.studentsInQueueCount}
+          </Typography>
+        </Grid>
       </Grid>
 
       <Grid
         container
         item
         xs={12}
-        justifyContent="space-between"
+        justifyContent="center"
         alignItems="center"
         style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          marginBottom: "0px",
           width: "100%",
           maxWidth: 1000,
         }}
       >
-        <Typography variant="h5">Заявок на рассмотрении: {courseDetails.studentsInQueueCount}</Typography>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          centered
+          style={{ marginBottom: "20px", width: "100%", maxWidth: 1000 }}
+        >
+          <Tab label="Требования к курсу" />
+          <Tab label="Аннотация" />
+          <Tab label="Уведомления" />
+        </Tabs>
       </Grid>
+
+      {tabValue === 0 && (
+        <Grid
+          container
+          item
+          xs={12}
+          justifyContent="space-between"
+          alignItems="center"
+          style={{
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginBottom: "0px",
+            width: "100%",
+            maxWidth: 1000,
+          }}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: courseDetails.requirements }}
+          />
+        </Grid>
+      )}
+
+      {tabValue === 1 && (
+        <Grid
+          container
+          item
+          xs={12}
+          justifyContent="space-between"
+          alignItems="center"
+          style={{
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginBottom: "0px",
+            width: "100%",
+            maxWidth: 1000,
+          }}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: courseDetails.annotations }}
+          />
+        </Grid>
+      )}
+
+      {tabValue === 2 && (
+        <Grid
+          container
+          item
+          xs={12}
+          justifyContent="center"
+          alignItems="center"
+          style={{
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginBottom: "0px",
+            width: "100%",
+            maxWidth: 1000,
+          }}
+        >
+          {notifications.map((notification, index) => (
+            <Grid
+              key={index}
+              container
+              item
+              xs={12}
+              justifyContent="space-between"
+              alignItems="center"
+              style={{
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+                width: "100%",
+              }}
+            >
+              <Typography variant="body1" fontWeight="bold">
+                {notification.text}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Grid>
   );
 };

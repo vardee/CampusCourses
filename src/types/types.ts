@@ -84,12 +84,12 @@ interface Students{
     midtermResult: string,
     finalResult: string
 }
-interface Teachers{
+export interface Teachers{
     name: string,
     email: string,
     isMain: boolean
 }
-interface Notifications{
+export interface Notifications{
     text: string,
     isImportant: boolean
 }
