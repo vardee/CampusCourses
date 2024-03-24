@@ -367,7 +367,7 @@ const GroupPage = () => {
             <ReactQuill
               theme="snow"
               value={formik.values.requirements}
-              onChange={formik.handleChange("requirements")}
+              onChange={handleEditorChange("requirements")}
             />
             <Typography gutterBottom sx={{ mt: 2 }}>
               Аннотации
@@ -375,14 +375,14 @@ const GroupPage = () => {
             <ReactQuill
               theme="snow"
               value={formik.values.annotations}
-              onChange={formik.handleChange("annotations")}
+              onChange={handleEditorChange("annotations")}
             />
             <Typography gutterBottom sx={{ mt: 2 }}>
               Основной преподаватель курса
             </Typography>
             <Select
               value={formik.values.selectedTeacher}
-              onChange={formik.handleChange}
+              onChange={handleTeacherChange}
               fullWidth
               variant="outlined"
               name="selectedTeacher"
