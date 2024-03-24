@@ -1,4 +1,4 @@
-import { ICreateGroupData, IDeleteGroup } from "../../types/types"
+import { ICreateGroupData, IDeleteGroup, IGetUserRole } from "../../types/types"
 
 export const initialRegisterScheme ={
     fullName: '',
@@ -17,3 +17,8 @@ export const initialCreateGroupData: ICreateGroupData = {
 export const initialDeleteGroupData: IDeleteGroup = {
     id: ''
 }
+export const initialGetRoleData: IGetUserRole = {
+    isTeacher: false,
+    isStudent: false,
+    isAdmin: false,
+};

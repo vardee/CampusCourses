@@ -1,5 +1,5 @@
 import { instance } from "../api/axios.api";
-import { Group, ICreateGroupData, IDeleteGroup } from "../types/types";
+import { Group, GroupCourses, ICreateGroupData, IDeleteGroup } from "../types/types";
 
 
 export const GroupsService = {
@@ -12,5 +12,13 @@ export const GroupsService = {
     },
     async deleteGroup(deleteGroupData: IDeleteGroup) {
         await instance.delete(`groups/${deleteGroupData.id}`);
-    }  
+    },
+
+    async editGroup(editGroupData: IDeleteGroup,createNewGroupData: ICreateGroupData) {
+        await instance.put(`groups/${editGroupData.id}`, createNewGroupData);
+    },
+    async getGroupCourses(getGroupData: string): Promise<GroupCourses[]> {
+        const {data} = await instance.get<GroupCourses[]>(`groups/${getGroupData}`)
+        return data;
+    }, 
 }

@@ -1,49 +1,46 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { IEditProfile, IGetUser } from "../../types/types";
+import { IGetUser } from "../../types/types";
 import { AuthService } from "../../services/auth.service";
 import { toast } from "react-toastify";
 
-
 const Profile = () => {
+  const initialGetUserData: IGetUser = {
+    fullName: "",
+    email: "",
+    birthDate: "",
+  };
+  const [getUserData, setGetUserData] = useState<IGetUser>(initialGetUserData);
+  const getProfileHandler = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      if (token) {
+        const data = await AuthService.getProfile();
+        if (data) {
+          const formattedBirthDate = data.birthDate.split("T")[0];
+          setGetUserData({ ...data, birthDate: formattedBirthDate });
+          console.log(data);
+        }
+      }
+    } catch (error) {}
+  };
 
-    const initialGetUserData: IGetUser = {
-        fullName: '',
-        email: '',
-        birthDate: ''
-    };
-    const [getUserData, setGetUserData] = useState<IGetUser>(initialGetUserData);
-    const getProfileHandler = async () => {
-        const token = localStorage.getItem('token')
-        try {
-            if (token) {
-                const data = await AuthService.getProfile()
-                if (data) {
-                    const formattedBirthDate = data.birthDate.split('T')[0];
-                    setGetUserData({ ...data, birthDate: formattedBirthDate });
-                    console.log(data);
-                }
-            }
-        } catch (error) {
-        }
+  const editProfileHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    const token = localStorage.getItem("token");
+    try {
+      e.preventDefault();
+      if (token) {
+        await AuthService.editProfile(getUserData);
+        toast.success("Данные успешно поменялись");
+        console.log(getUserData);
+      }
+    } catch (error) {
+      toast.error("Произошла ошибка");
     }
-    
-    const editProfileHandler = async (e: React.FormEvent<HTMLFormElement>) =>{
-        const token = localStorage.getItem('token')
-        try {
-            e.preventDefault();
-            if (token) {
-              await AuthService.editProfile(getUserData);
-              toast.success('Данные успешно поменялись')
-              console.log(getUserData)
-            }
-        } catch (error) {
-          toast.error("Произошла ошибка")
-        }
-    }
-    useEffect(() => {
-        getProfileHandler();
-    }, []);
+  };
+  useEffect(() => {
+    getProfileHandler();
+  }, []);
 
   return (
     <div
@@ -64,9 +61,10 @@ const Profile = () => {
             border: "1px solid #ccc",
             borderRadius: "8px",
             padding: "20px",
-            maxWidth: "400px", 
-            marginTop: "20px", 
-          }}>
+            maxWidth: "400px",
+            marginTop: "20px",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Профиль
           </Typography>
@@ -83,7 +81,7 @@ const Profile = () => {
                   id="fullName"
                   name="fullName"
                   autoComplete="fullName"
-                  value={getUserData.fullName} 
+                  value={getUserData.fullName}
                   onChange={(e) =>
                     setGetUserData({ ...getUserData, fullName: e.target.value })
                   }
@@ -114,10 +112,13 @@ const Profile = () => {
                   id="birthDate"
                   name="birthDate"
                   type="date"
-                  value={getUserData.birthDate} 
+                  value={getUserData.birthDate}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) =>
-                    setGetUserData({ ...getUserData, birthDate: e.target.value })
+                    setGetUserData({
+                      ...getUserData,
+                      birthDate: e.target.value,
+                    })
                   }
                 />
               </Grid>
@@ -137,6 +138,6 @@ const Profile = () => {
       </Grid>
     </div>
   );
-}
+};
 
-export default Profile
+export default Profile;

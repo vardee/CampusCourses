@@ -15,19 +15,19 @@ import {
 } from "@mui/material";
 import { AuthService } from "../../services/auth.service";
 import { Link } from "react-router-dom";
+import { initialGetRoleData } from "../../components/InitialValues/initialValues";
 
 const Groups = () => {
   const initialGroups: Group[] = [];
-  const initialGetUserData: IGetUserRole = {
-    isTeacher: false,
-    isStudent: false,
-    isAdmin: false,
-  };
   const [userRoleData, setUserRoleData] =
-    useState<IGetUserRole>(initialGetUserData);
+    useState<IGetUserRole>(initialGetRoleData);
   const [groups, setGroups] = useState<Group[]>(initialGroups);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupEditName, setNewGroupEditName] = useState("");
+  const [editGroupId, setEditGroupId] = useState("");
 
   const getUserRole = async () => {
     const token = localStorage.getItem("token");
@@ -44,7 +44,7 @@ const Groups = () => {
   const createGroup = async () => {
     try {
       await GroupsService.createNewGroup({ name: newGroupName });
-      setIsModalOpen(false);
+      setIsCreateModalOpen(false);
       toast.success("Группа успешно создана");
       setNewGroupName("");
       getGroupsList();
@@ -69,8 +69,17 @@ const Groups = () => {
     getGroupsList();
   }, []);
 
-  const handleEdit = (groupId: string) => {
-    console.log(`Редактирование группы с ID ${groupId}`);
+  const handleEditGroup = async () => {
+    try {
+      await GroupsService.editGroup({id: editGroupId}, {name: newGroupEditName});
+      setIsEditModalOpen(false);
+      toast.success("Редактирование прошло успешно");
+      setNewGroupEditName("");
+      getGroupsList();
+    } catch (error) {
+      console.error(error);
+      toast.error("Ошибка при редактировании группы");
+    }
   };
 
   const handleDeleteGroup = async (groupId: string) => {
@@ -109,8 +118,8 @@ const Groups = () => {
           Группы кампусных курсов
         </Typography>
         {userRoleData.isAdmin && (
-          <Button variant="contained" onClick={() => setIsModalOpen(true)}>
-            Создать
+          <Button variant="contained" onClick={() => setIsCreateModalOpen(true)}>
+            Создать 
           </Button>
         )}
       </Grid>
@@ -144,7 +153,12 @@ const Groups = () => {
                     color="inherit"
                     sx={{ background: "orange", marginBottom: "8px" }}
                     size="small"
-                    onClick={() => handleEdit(group.id)}
+                    variant="contained"   onClick={() => {
+                      setIsEditModalOpen(true);
+                      setEditGroupId(group.id);
+                      setNewGroupEditName(group.name);
+                      console.log(group.id)
+                    }}
                   >
                     Редактировать
                   </Button>
@@ -162,7 +176,7 @@ const Groups = () => {
           </Card>
         </Grid>
       ))}
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
         <Box
           sx={{
             position: "fixed",
@@ -191,6 +205,38 @@ const Groups = () => {
           />
           <Button onClick={createGroup} variant="contained" sx={{ mt: 2 }}>
             Создать
+          </Button>
+        </Box>
+      </Modal>
+      <Modal open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <Box
+          sx={{
+            position: "fixed",
+            top: "20%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "90%",
+            maxWidth: 400,
+            maxHeight: "90%",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            overflowY: "auto",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Редактирование группы
+          </Typography>
+          <TextField
+            label="Имя группы"
+            variant="outlined"
+            value={newGroupEditName}
+            onChange={(e) => setNewGroupEditName(e.target.value)}
+            fullWidth
+            autoFocus
+          />
+          <Button onClick={handleEditGroup} variant="contained" sx={{ mt: 2 }}>
+            Редактировать
           </Button>
         </Box>
       </Modal>

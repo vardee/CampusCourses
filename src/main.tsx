@@ -14,6 +14,7 @@ import Teaching from './pages/Teaching/teaching.tsx'
 import MainPage from './pages/Main/mainPage.tsx'
 import Groups from './pages/Groups/groups.tsx'
 import GroupPage from './pages/GroupPage/groupPage.tsx'
+import CoursePage from './pages/CoursePage/course.tsx'
 
 
 const router = createBrowserRouter([
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path:"/groups/:id",
         element:<GroupPage />
+      },
+      {
+        path:"/courses/:id",
+        element:<CoursePage />
       },
     ],
   },

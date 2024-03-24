@@ -1,5 +1,5 @@
 import { instance } from "../api/axios.api";
-import {IEditProfile, IGetUser, IGetUserRole, IResponseUserData, IUserLoginData, IUserRegistrationData } from "../types/types";
+import {IEditProfile, IGetUser, IGetUserRole, IResponseUserData, IUserLoginData, IUserRegistrationData, UsersModel } from "../types/types";
 
 export const AuthService = {
     async registration(userRegisterData: IUserRegistrationData): Promise<IResponseUserData | undefined>{
@@ -25,5 +25,10 @@ export const AuthService = {
     },
     async logout(){
         await instance.post('logout')
-    }
+    },
+
+    async getUsers(): Promise<UsersModel[]> {
+        const {data} = await instance.get<UsersModel[]>(`users`)
+        return data;
+    }, 
 }
