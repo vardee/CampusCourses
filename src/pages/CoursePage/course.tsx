@@ -1,30 +1,32 @@
+import React, { useEffect, useState } from "react";
 import { Grid, Typography, Button, Tabs, Tab } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { initialCourseDetailsData } from "../../components/InitialValues/initialValues";
-import { CourseDetails, Notifications } from "../../types/types";
+import CourseInfoComponent from "../../components/Course/CourseInfoComponent";
+import CourseStatusComponent from "../../components/Course/CourseStatusComponent";
+import NotificationComponent from "../../components/Course/NotificationComponent";
+import TeacherComponent from "../../components/Course/TeacherComponent";
+import StudentComponent from "../../components/Course/StudentComponent";
 import { CourseService } from "../../services/course.service";
 import { toast } from "react-toastify";
-import {
-  translateCourseStatus,
-  translateSemester,
-} from "../../helpers/validators/translator";
+import { Notifications } from "../../types/types";
+import { initialCourseDetailsData } from "../../components/InitialValues/initialValues";
+import { translateCourseStatus, translateSemester } from "../../helpers/validators/translator";
 
 const CoursePage = () => {
   const { id } = useParams<{ id?: string }>();
-  const [courseDetails, setCourseDetails] = useState<CourseDetails>(
-    initialCourseDetailsData
-  );
+  const [courseDetails, setCourseDetails] = useState(initialCourseDetailsData);
   const [notifications, setNotifications] = useState<Notifications[]>([]);
-  const [tabValue, setTabValue] = useState(0);
+  const [firstTabValue, setFirstTabValue] = useState(0);
+  const [secondTabValue, setSecondTabValue] = useState(0);
+
   const getCourseDetails = async () => {
-    const token = localStorage.getItem("token");
     try {
+      const token = localStorage.getItem("token");
       if (token) {
-        const courseDeatilsData = await CourseService.getCourseDetails(id);
-        if (courseDeatilsData) {
-          setCourseDetails(courseDeatilsData);
-          setNotifications(courseDeatilsData.notifications);
+        const courseDetailsData = await CourseService.getCourseDetails(id);
+        if (courseDetailsData) {
+          setCourseDetails(courseDetailsData);
+          setNotifications(courseDetailsData.notifications);
         }
       }
     } catch (error) {
@@ -36,9 +38,21 @@ const CoursePage = () => {
   useEffect(() => {
     getCourseDetails();
   }, []);
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabValue(newValue);
+
+  const handleFirstTabChange = (
+    event: React.ChangeEvent<{}>,
+    newValue: number
+  ) => {
+    setFirstTabValue(newValue);
   };
+
+  const handleSecondTabChange = (
+    event: React.ChangeEvent<{}>,
+    newValue: number
+  ) => {
+    setSecondTabValue(newValue);
+  };
+
   return (
     <Grid
       container
@@ -59,91 +73,21 @@ const CoursePage = () => {
       <Grid
         container
         item
-        xs={12}
         justifyContent="space-between"
         alignItems="center"
-        style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          marginBottom: "0px",
-          width: "100%",
-          maxWidth: 1000,
-        }}
+        style={{ width: "100%", maxWidth: 1000 }}
       >
-        <Grid item>
-          <Typography variant="body1" fontWeight="bold">
-            Статус курса
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {translateCourseStatus(courseDetails.status)}
-          </Typography>
-        </Grid>
-        <Button variant="contained" color="primary">
-          Изменить
+        <Typography
+          variant="body1"
+          gutterBottom
+          style={{ maxWidth: "100%", fontSize: "clamp(1rem, 3vw, 1.3rem)" }}
+        >
+          Основные детали курса
+        </Typography>
+        <Button variant="contained" color="warning">
+          Редактировать
         </Button>
       </Grid>
-      <Grid
-        container
-        item
-        xs={12}
-        justifyContent="space-between"
-        alignItems="center"
-        style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          marginBottom: "0px",
-          width: "100%",
-          maxWidth: 1000,
-        }}
-      >
-        <Grid item>
-          <Typography variant="body1" fontWeight="bold">
-            Учебный год
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {courseDetails.startYear}
-          </Typography>
-        </Grid>
-        <Grid item xs={6} style={{ textAlign: "center" }}>
-          <Typography variant="body1" fontWeight="bold">
-            Семестр
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {translateSemester(courseDetails.semester)}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        item
-        xs={12}
-        justifyContent="space-between"
-        alignItems="center"
-        style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          marginBottom: "0px",
-          width: "100%",
-          maxWidth: 1000,
-        }}
-      >
-        <Grid item>
-          <Typography variant="body1" fontWeight="bold">
-            Всего мест
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {courseDetails.maximumStudentsCount}
-          </Typography>
-        </Grid>
-        <Grid item xs={6} style={{ textAlign: "center" }}>
-          <Typography variant="body1" fontWeight="bold">
-            Студентов зачислено
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {courseDetails.studentsEnrolledCount}
-          </Typography>
-        </Grid>
-      </Grid>
 
       <Grid
         container
@@ -160,15 +104,75 @@ const CoursePage = () => {
         }}
       >
         <Grid item>
-          <Typography variant="body1" fontWeight="bold">
-            Заявок на рассмотрении
-          </Typography>
-          <Typography variant="body1" style={{ marginTop: 5 }}>
-            {courseDetails.studentsInQueueCount}
-          </Typography>
+          <CourseInfoComponent
+            label="Статус курса"
+            value= {translateCourseStatus(courseDetails.status)} 
+          />
+        </Grid>
+        {<Button variant="contained" color="warning">
+          Изменить
+        </Button>}
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="space-between"
+        alignItems="center"
+        style={{
+          border: "1px solid #ccc",
+          padding: "10px",
+          marginBottom: "0px",
+          width: "100%",
+          maxWidth: 1000,
+        }}
+      >
+        <Grid item>
+        <CourseInfoComponent label="Учебный год" value={courseDetails.startYear} />
+        </Grid>
+        <Grid item xs={6} style={{ textAlign: "center" }}>
+        <CourseInfoComponent label="Семестр" value={translateSemester(courseDetails.semester)} />
         </Grid>
       </Grid>
-
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="space-between"
+        alignItems="center"
+        style={{
+          border: "1px solid #ccc",
+          padding: "10px",
+          marginBottom: "0px",
+          width: "100%",
+          maxWidth: 1000,
+        }}
+      >
+        <Grid item>
+        <CourseInfoComponent label="Всего мест" value={courseDetails.maximumStudentsCount} />
+        </Grid>
+        <Grid item xs={6} style={{ textAlign: "center" }}>
+        <CourseInfoComponent label="Студентов зачислено" value={courseDetails.studentsEnrolledCount} />
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="space-between"
+        alignItems="center"
+        style={{
+          border: "1px solid #ccc",
+          padding: "10px",
+          marginBottom: "0px",
+          width: "100%",
+          maxWidth: 1000,
+        }}
+      >
+        <Grid item>
+        <CourseInfoComponent label="Заявок на рассмотрении" value={courseDetails.studentsInQueueCount} />
+        </Grid>
+      </Grid>
       <Grid
         container
         item
@@ -181,8 +185,8 @@ const CoursePage = () => {
         }}
       >
         <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
+          value={firstTabValue}
+          onChange={handleFirstTabChange}
           variant="fullWidth"
           centered
           style={{ marginBottom: "20px", width: "100%", maxWidth: 1000 }}
@@ -193,7 +197,7 @@ const CoursePage = () => {
         </Tabs>
       </Grid>
 
-      {tabValue === 0 && (
+      {firstTabValue === 0 && (
         <Grid
           container
           item
@@ -214,7 +218,7 @@ const CoursePage = () => {
         </Grid>
       )}
 
-      {tabValue === 1 && (
+      {firstTabValue === 1 && (
         <Grid
           container
           item
@@ -235,42 +239,39 @@ const CoursePage = () => {
         </Grid>
       )}
 
-      {tabValue === 2 && (
-        <Grid
-          container
-          item
-          xs={12}
-          justifyContent="center"
-          alignItems="center"
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginBottom: "0px",
-            width: "100%",
-            maxWidth: 1000,
-          }}
+      {firstTabValue === 2 && (
+        <NotificationComponent notifications={notifications} />
+      )}
+
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        alignItems="center"
+        style={{
+          width: "100%",
+          maxWidth: 1000,
+        }}
+      >
+        <Tabs
+          value={secondTabValue}
+          onChange={handleSecondTabChange}
+          variant="fullWidth"
+          centered
+          style={{ marginBottom: "20px", width: "100%", maxWidth: 1000 }}
         >
-          {notifications.map((notification, index) => (
-            <Grid
-              key={index}
-              container
-              item
-              xs={12}
-              justifyContent="space-between"
-              alignItems="center"
-              style={{
-                border: "1px solid #ccc",
-                padding: "10px",
-                marginBottom: "10px",
-                width: "100%",
-              }}
-            >
-              <Typography variant="body1" fontWeight="bold">
-                {notification.text}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
+          <Tab label="Преподаватели" />
+          <Tab label="Студенты" />
+        </Tabs>
+      </Grid>
+
+      {secondTabValue === 0 && (
+        <TeacherComponent teachers={courseDetails.teachers} />
+      )}
+
+      {secondTabValue === 1 && (
+        <StudentComponent students={courseDetails.students} />
       )}
     </Grid>
   );
