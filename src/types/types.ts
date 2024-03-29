@@ -67,14 +67,17 @@ export interface UsersModel {
 
 export interface CreateCourse {
     name: string,
-    startYear: string,
-    maximumStudentsCount: string,
+    startYear: number,
+    maximumStudentsCount: number,
     semester: string,
     requirements: string,
     annotations: string,
     mainTeacherId: string
 }
-
+export interface EditCourseTeacher {
+    requirements: string,
+    annotations: string,
+}
 
 export interface Students{
     id: string,
@@ -96,10 +99,10 @@ export interface Notifications{
 export interface CourseDetails{
     id: string,
     name: string,
-    startYear: string,
-    maximumStudentsCount: string,
-    studentsEnrolledCount: string,
-    studentsInQueueCount: string,
+    startYear: number,
+    maximumStudentsCount: number,
+    studentsEnrolledCount: number,
+    studentsInQueueCount: number,
     requirements: string,
     annotations: string,
     status: string,
@@ -108,3 +111,45 @@ export interface CourseDetails{
     teachers: Teachers[],
     notifications: Notifications[]
 }
+export interface TeachingCourse{
+    id: string,
+    name: string,
+    startYear: number,
+    maximumStudentsCount: number,
+    remainingSlotsCount: number,
+    status: string,
+    semester: string
+}
+export interface ChangeStatus{
+    status: string;
+}
+
+export interface AddTeacherToCourse{
+    userId: string;
+}
+
+export interface MyCourses{
+    id: string,
+    name: string,
+    startYear: number,
+    maximumStudentsCount: number,
+    remainingSlotsCount: number,
+    status: string,
+    semester: string
+}
+
+export interface CreateNotification{
+    text: string,
+    isImportant: boolean
+}
+export interface StudentStatus{
+    status: string,
+}
+
+
+
+export interface ChangeTermStatus{
+    markType: string,
+    mark: string
+}
+  

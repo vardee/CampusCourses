@@ -1,12 +1,15 @@
 import React from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import { Notifications } from "../../types/types";
+import { IGetUserRole, Notifications } from "../../types/types";
 
 interface Props {
   notifications: Notifications[];
+  userRoles: IGetUserRole;
+  isCurrentTeacher: boolean;
+  onOpenModal: () => void;
 }
 
-const NotificationComponent: React.FC<Props> = ({ notifications }) => {
+const NotificationComponent: React.FC<Props> = ({ notifications,userRoles,isCurrentTeacher,onOpenModal }) => {
   return (
     <React.Fragment>
       <Grid
@@ -23,15 +26,16 @@ const NotificationComponent: React.FC<Props> = ({ notifications }) => {
           maxWidth: 1000,
         }}
       >
-        <Grid container justifyContent="flex-start">
+        {(isCurrentTeacher || userRoles.isAdmin) && <Grid container justifyContent="flex-start">
           <Button
             variant="contained"
             color="primary"
             style={{ marginBottom: "10px" }}
+            onClick={() => onOpenModal()}
           >
             Создать уведомление
           </Button>
-        </Grid>
+        </Grid>}
         {notifications.map((notification, index) => (
           <Grid
             key={index}

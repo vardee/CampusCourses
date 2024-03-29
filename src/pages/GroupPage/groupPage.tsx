@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { Group, GroupCourses, IGetUserRole, UsersModel } from "../../types/types";
+import { GroupCourses, IGetUserRole, UsersModel } from "../../types/types";
 import { toast } from "react-toastify";
 import { GroupsService } from "../../services/groups.service";
 import { AuthService } from "../../services/auth.service";
@@ -74,8 +74,8 @@ const GroupPage: React.FC = () => {
   const formik = useFormik({
     initialValues: {
       newCourseName: "",
-      startYear: "",
-      maximumStudentsCount: "",
+      startYear: 2029,
+      maximumStudentsCount: 200,
       semester: "",
       requirements: "",
       annotations: "",

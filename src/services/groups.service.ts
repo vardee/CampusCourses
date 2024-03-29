@@ -10,8 +10,8 @@ export const GroupsService = {
     async createNewGroup(createNewGroupData: ICreateGroupData) {
         await instance.post('groups', createNewGroupData)
     },
-    async deleteGroup(deleteGroupData: IDeleteGroup) {
-        await instance.delete(`groups/${deleteGroupData.id}`);
+    async deleteGroup(deleteGroupData: string) {
+        await instance.delete(`groups/${deleteGroupData}`);
     },
 
     async editGroup(editGroupData: IDeleteGroup,createNewGroupData: ICreateGroupData) {

@@ -1,18 +1,132 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import { Students } from "../../types/types";
+import { IGetUserRole, StudentStatus, Students } from "../../types/types";
 import {
   getStudentStatusColor,
   translateStudentStatus,
   getResultsStatusColor,
   translateResults,
 } from "../../helpers/validators/translator";
+import { CourseService } from "../../services/course.service";
+import { toast } from "react-toastify";
+import ChangeTermStatusModal from "./changeMidTermStatusModal";
+import { useFormik } from "formik";
 
 interface Props {
   students: Students[];
+  role: IGetUserRole;
+  isCurrentTeacher: boolean;
+  id: string | undefined;
+  getCourseDetails: () => void;
 }
 
-const StudentComponent: React.FC<Props> = ({ students }) => {
+const StudentComponent: React.FC<Props> = ({
+  students,
+  role,
+  isCurrentTeacher,
+  id,
+  getCourseDetails
+}) => {
+  const currentUserEmail = localStorage.getItem("email");
+
+  const [isChangeTermStatusModalOpen, setIsChangeTermStatusModalOpen] =
+    useState(false);
+  const [
+    isChangeFinalTermStatusModalOpen,
+    setIsChangeFinalTermStatusModalOpen,
+  ] = useState(false);
+  const [currentStudentId, setCurrentStudentId] = useState("");
+
+  const editStudentStatus = async (
+    studentId: string,
+    status: StudentStatus
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await CourseService.editStudentStatus(status, id, studentId);
+        getCourseDetails();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Ошибка при изменении статуса студента");
+    }
+  };
+
+  const handleSetCurrentStudentId = (studentId: string) => {
+    setCurrentStudentId(studentId);
+    setIsChangeTermStatusModalOpen(true);
+  };
+
+  const handleSetCurrentFinalStudentId = (studentId: string) => {
+    setCurrentStudentId(studentId);
+    setIsChangeFinalTermStatusModalOpen(true);
+  };
+
+  const formikChangeStatus = useFormik({
+    initialValues: {
+      markType: "Midterm",
+      mark: "",
+      studentId: "",
+    },
+    onSubmit: async (values) => {
+      debugger;
+      try {
+        if (role.isAdmin || isCurrentTeacher) {
+          const changeStatus = {
+            markType: values.markType,
+            mark: values.mark,
+            studentId: currentStudentId,
+          };
+          await CourseService.editTermStatus(
+            changeStatus,
+            id,
+            currentStudentId
+          );
+
+          setIsChangeTermStatusModalOpen(false);
+
+          getCourseDetails();
+          setCurrentStudentId(" ");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Ошибка при выдаче оценки студенту");
+      }
+    },
+  });
+
+  const formikChangeFinalTermStatus = useFormik({
+    initialValues: {
+      markType: "Final",
+      mark: "",
+      studentId: "",
+    },
+    onSubmit: async (values) => {
+      debugger;
+      try {
+        if (role.isAdmin || isCurrentTeacher) {
+          const changeStatus = {
+            markType: values.markType,
+            mark: values.mark,
+            studentId: currentStudentId,
+          };
+          await CourseService.editTermStatus(
+            changeStatus,
+            id,
+            currentStudentId
+          );
+
+          setIsChangeTermStatusModalOpen(false);
+          getCourseDetails();
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Ошибка при выдаче оценки студенту");
+      }
+    },
+  });
+
   return (
     <React.Fragment>
       <Grid
@@ -54,7 +168,9 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
                   style={{ color: "grey", fontSize: "0.9em" }}
                 >
                   Статус -{" "}
-                  <span style={{ color: getStudentStatusColor(student.status) }}>
+                  <span
+                    style={{ color: getStudentStatusColor(student.status) }}
+                  >
                     {translateStudentStatus(student.status)}
                   </span>
                 </Typography>
@@ -66,7 +182,7 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
                 </Typography>
               </Grid>
 
-              {student.status === "Accepted" && (
+              {((student.email === currentUserEmail) || (role.isAdmin || isCurrentTeacher)) && student.status === "Accepted" && (
                 <Grid
                   container
                   item
@@ -76,7 +192,19 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
                   style={{ textAlign: "center" }}
                 >
                   <Grid item>
-                    <Typography variant="body1" fontWeight="bold">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      style={{
+                        cursor: (role.isAdmin || isCurrentTeacher) ? 'pointer' : 'default',
+                        pointerEvents: (role.isAdmin || isCurrentTeacher) ? 'auto' : 'none'
+                      }}
+                      onClick={() => {
+                        if (role.isAdmin || isCurrentTeacher) {
+                          handleSetCurrentStudentId(student.id);
+                        }
+                      }}
+                    >
                       Промежуточная аттестация
                     </Typography>
                     <Typography
@@ -90,7 +218,19 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
                     </Typography>
                   </Grid>
                   <Grid item style={{ marginLeft: "auto" }}>
-                    <Typography variant="body1" fontWeight="bold">
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      style={{
+                        cursor: (role.isAdmin || isCurrentTeacher) ? 'pointer' : 'default',
+                        pointerEvents: (role.isAdmin || isCurrentTeacher) ? 'auto' : 'none'
+                      }}
+                      onClick={() => {
+                        if (role.isAdmin || isCurrentTeacher) {
+                          handleSetCurrentFinalStudentId(student.id);
+                        }
+                      }}
+                    >
                       Финальная аттестация
                     </Typography>
                     <Typography
@@ -105,40 +245,47 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
                   </Grid>
                 </Grid>
               )}
-              {student.status === "InQueue" && (
-                <Grid
-                  container
-                  item
-                  xs={6}
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ textAlign: "center" }}
-                >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{
-                      marginBottom: "10px",
-                      marginRight: "10px",
-                      width: "150px",
-                      height: "50px",
-                    }}
+              {student.status === "InQueue" &&
+                (role.isAdmin || isCurrentTeacher) && (
+                  <Grid
+                    container
+                    item
+                    xs={6}
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ textAlign: "center" }}
                   >
-                    Принять заявку
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    style={{
-                      marginBottom: "10px",
-                      width: "150px",
-                      height: "50px",
-                    }}
-                  >
-                    Отклонить заявку
-                  </Button>
-                </Grid>
-              )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      style={{
+                        marginBottom: "10px",
+                        marginRight: "10px",
+                        width: "150px",
+                        height: "50px",
+                      }}
+                      onClick={() =>
+                        editStudentStatus(student.id, { status: "Accepted" })
+                      }
+                    >
+                      Принять заявку
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      style={{
+                        marginBottom: "10px",
+                        width: "150px",
+                        height: "50px",
+                      }}
+                      onClick={() =>
+                        editStudentStatus(student.id, { status: "Declined" })
+                      }
+                    >
+                      Отклонить заявку
+                    </Button>
+                  </Grid>
+                )}
             </Grid>
             {index !== students.length - 1 && (
               <hr
@@ -151,6 +298,18 @@ const StudentComponent: React.FC<Props> = ({ students }) => {
             )}
           </React.Fragment>
         ))}
+        <ChangeTermStatusModal
+          isOpen={isChangeTermStatusModalOpen}
+          onClose={() => setIsChangeTermStatusModalOpen(false)}
+          formikStatus={formikChangeStatus}
+          studentId={currentStudentId}
+        />
+        <ChangeTermStatusModal
+          isOpen={isChangeFinalTermStatusModalOpen}
+          onClose={() => setIsChangeFinalTermStatusModalOpen(false)}
+          formikStatus={formikChangeFinalTermStatus}
+          studentId={currentStudentId}
+        />
       </Grid>
     </React.Fragment>
   );

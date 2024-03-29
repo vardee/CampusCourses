@@ -25,3 +25,12 @@ export const validationCreateCourseSchema = yup.object({
     annotations: yup.string().required("Введите аннотации курса"),
     selectedTeacher: yup.string().required("Выберите преподавателя курса"),
   });
+
+  export const validationEditCourseSchema = yup.object({
+    requirements: yup.string().required("Введите требования курса"),
+    annotations: yup.string().required("Введите аннотации курса"),
+  });
+
+  export const validationChangeStatusSchema = yup.object({
+    status: yup.string().required("Выберите статус курса")
+  });

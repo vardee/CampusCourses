@@ -1,12 +1,20 @@
 import React from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import { Teachers } from "../../types/types";
+import { IGetUserRole, Teachers } from "../../types/types";
 
 interface Props {
   teachers: Teachers[];
+  userRoles: IGetUserRole;
+  isMainTeacher: boolean;
+  onOpenModal: () => void;
 }
 
-const TeacherComponent: React.FC<Props> = ({ teachers }) => {
+const TeacherComponent: React.FC<Props> = ({
+  teachers,
+  userRoles,
+  isMainTeacher,
+  onOpenModal
+}) => {
   return (
     <React.Fragment>
       <Grid
@@ -26,15 +34,16 @@ const TeacherComponent: React.FC<Props> = ({ teachers }) => {
           flexWrap: "wrap",
         }}
       >
-        <Grid container justifyContent="flex-start">
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginBottom: "10px" }}
-          >
-            Добавить преподавателя
-          </Button>
-        </Grid>
+        {(userRoles.isAdmin || isMainTeacher) && (
+          <Grid container justifyContent="flex-start">
+            <Button
+              variant="contained"
+              onClick={() => onOpenModal()}
+            >
+              Добавить преподавателя
+            </Button>
+          </Grid>
+        )}
         {teachers.map((teacher, index) => (
           <React.Fragment key={index}>
             <div style={{ marginRight: "20px", marginBottom: "20px" }}>

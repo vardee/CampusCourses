@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { GroupsService } from "../../services/groups.service";
-import { Group, IGetUserRole } from "../../types/types";
+import { Group, IDeleteGroup, IGetUserRole } from "../../types/types";
 import { Button, Grid, Typography } from "@mui/material";
 import CreateGroupModal from "../../components/Group/createModal";
 import EditGroupModal from "../../components/Group/editModal";
 import GroupCard from "../../components/Group/groupCard";
 import { AuthService } from "../../services/auth.service";
-import { initialGetRoleData } from "../../components/InitialValues/initialValues";
+import { initialDeleteGroupData, initialGetRoleData } from "../../components/InitialValues/initialValues";
+import DeleteGroupModal from "../../components/Group/deleteGroupModal";
 
 const GroupsPage = () => {
-  const [userRoleData, setUserRoleData] = useState<IGetUserRole>(initialGetRoleData);
+  const [userRoleData, setUserRoleData] =
+    useState<IGetUserRole>(initialGetRoleData);
   const [groups, setGroups] = useState<Group[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editGroupName, setEditGroupName] = useState("");
   const [editGroupId, setEditGroupId] = useState("");
+  const [deleteGroupId, setDeleteGroupId] = useState("")
+  const [deleteGroupModal, setDeleteGroupModal] = useState(false);
 
   const getUserRole = async () => {
     const token = localStorage.getItem("token");
@@ -30,7 +34,7 @@ const GroupsPage = () => {
       console.error("Ошибка при получении роли пользователя:", error);
     }
   };
-  
+
   const getGroupsList = async () => {
     try {
       const groupsList = await GroupsService.getGroups();
@@ -40,12 +44,12 @@ const GroupsPage = () => {
       toast.error("Ошибка при загрузке списка групп");
     }
   };
-  
+
   useEffect(() => {
     getUserRole();
     getGroupsList();
   }, []);
-  
+
   const handleCreateGroup = async (name: string) => {
     try {
       await GroupsService.createNewGroup({ name });
@@ -57,9 +61,9 @@ const GroupsPage = () => {
       toast.error("Ошибка при создании группы");
     }
   };
-  
-  const handleEditGroup = async (id:string, name:string ) => {
-    debugger
+
+  const handleEditGroup = async (id: string, name: string) => {
+    debugger;
     try {
       await GroupsService.editGroup({ id: id }, { name: name });
       setIsEditModalOpen(false);
@@ -70,18 +74,8 @@ const GroupsPage = () => {
       toast.error("Ошибка при редактировании группы");
     }
   };
-  
-  const handleDeleteGroup = async (groupId: string) => {
-    try {
-      await GroupsService.deleteGroup({ id: groupId });
-      setGroups(groups.filter((group) => group.id !== groupId));
-      toast.success("Группа успешно удалена");
-    } catch (error) {
-      console.error("Ошибка при удалении группы:", error);
-      toast.error("Ошибка при удалении группы");
-    }
-  };
-  
+
+
   return (
     <Grid
       container
@@ -106,8 +100,11 @@ const GroupsPage = () => {
           Группы кампусных курсов
         </Typography>
         {userRoleData.isAdmin && (
-          <Button variant="contained" onClick={() => setIsCreateModalOpen(true)}>
-            Создать 
+          <Button
+            variant="contained"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            Создать
           </Button>
         )}
       </Grid>
@@ -121,10 +118,18 @@ const GroupsPage = () => {
               setEditGroupName(group.name);
               setEditGroupId(group.id);
             }}
-            onDelete={() => handleDeleteGroup(group.id)}
+            onDelete={() => {setDeleteGroupModal(true)
+              setDeleteGroupId(group.id);
+            }}
           />
         </Grid>
       ))}
+      <DeleteGroupModal
+        isOpen={deleteGroupModal}
+        onClose={() => setDeleteGroupModal(false)}
+        id = {deleteGroupId}
+        getGroups={getGroupsList}
+      />
       <CreateGroupModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -139,7 +144,6 @@ const GroupsPage = () => {
       />
     </Grid>
   );
-  };
-  
-  export default GroupsPage;
-  
+};
+
+export default GroupsPage;
