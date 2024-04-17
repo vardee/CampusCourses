@@ -53,7 +53,7 @@ const NotificationComponent: React.FC<Props> = ({ notifications,userRoles,isCurr
               backgroundColor: notification.isImportant ? "#ed938e" : "inherit",
             }}
           >
-            <Typography variant="body1">{notification.text}</Typography>
+            <Typography variant="body1" style = {{wordBreak: "break-all"}}>{notification.text}</Typography>
           </Grid>
         ))}
       </Grid>

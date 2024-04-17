@@ -16,7 +16,14 @@ interface GroupCardProps {
   onDelete: () => void;
 }
 
+
 const GroupCard = ({ group, isAdmin, onEdit, onDelete }: GroupCardProps) => {
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return text.substring(0, maxLength) + "...";
+  };
   return (
     <Card>
       <CardContent
@@ -29,9 +36,9 @@ const GroupCard = ({ group, isAdmin, onEdit, onDelete }: GroupCardProps) => {
         <Typography variant="h5" component="div">
           <Link
             to={`/groups/${group.id}`}
-            style={{ textDecoration: "none", color: "inherit" }}
+            style={{ textDecoration: "none", color: "inherit" ,wordBreak: "break-all"}}
           >
-            {group.name}
+            {truncateText(group.name,30)}
           </Link>
         </Typography>
         {isAdmin && (

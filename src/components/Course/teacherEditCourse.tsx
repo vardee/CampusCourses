@@ -54,6 +54,30 @@ const EditTeacherCourseModal = ({
             onChange={(value) =>
               formikTeacher.setFieldValue("requirements", value)
             }
+            modules={{
+              toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],       
+                ['blockquote', 'code-block'],
+      
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ script: 'sub' }, { script: 'super' }],     
+                [{ indent: '-1' }, { indent: '+1' }],         
+                [{ direction: 'rtl' }],                        
+                [{ size: ['small', false, 'large', 'huge'] }],  
+                [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      
+                [{ color: [] }, { background: [] }],          
+                [{ font: [] }],
+                [{ align: [] }],
+                ['clean'],                                         
+                ['link', 'image', 'video']                         
+              ],
+            }}
+            formats={[
+              'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 
+              'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video'
+            ]}
           />
           <Typography gutterBottom sx={{ mt: 2 }}>
             Аннотации(Обязательно)
@@ -64,6 +88,30 @@ const EditTeacherCourseModal = ({
             onChange={(value) =>
               formikTeacher.setFieldValue("annotations", value)
             }
+            modules={{
+              toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],       
+                ['blockquote', 'code-block'],
+      
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ script: 'sub' }, { script: 'super' }],     
+                [{ indent: '-1' }, { indent: '+1' }],         
+                [{ direction: 'rtl' }],                        
+                [{ size: ['small', false, 'large', 'huge'] }],  
+                [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      
+                [{ color: [] }, { background: [] }],          
+                [{ font: [] }],
+                [{ align: [] }],
+                ['clean'],                                         
+                ['link', 'image', 'video']                         
+              ],
+            }}
+            formats={[
+              'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 
+              'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video'
+            ]}
           />
           <Button
             type="submit"

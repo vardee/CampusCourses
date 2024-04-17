@@ -2,18 +2,21 @@ import { Grid, Typography, Card, CardContent } from "@mui/material";
 import { Link } from "react-router-dom";
 import { GroupCourses } from "../../types/types";
 import { getStatusColor, translateCourseStatus, translateSemester } from "../../helpers/validators/translator";
+import { truncateText } from "../../helpers/truncateText";
 
 interface CourseCardProps {
   course: GroupCourses;
 }
 
 const CourseCard = ({ course }: CourseCardProps) => {
+
+
   return (
     <Grid item key={course.id} style={{ width: "100%", maxWidth: 1000 }}>
       <Card>
         <CardContent>
           <Grid container justifyContent="space-between" alignItems="flex-start">
-            <Typography variant="h5" component="div">
+            <Typography variant="h5" component="div" style={{ wordBreak: "break-all" }}>
               <Link
                 to={`/courses/${course.id}`}
                 style={{
@@ -21,7 +24,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
                   color: "inherit",
                 }}
               >
-                {course.name}
+                {truncateText(course.name, 30)}
               </Link>
             </Typography>
             <Typography

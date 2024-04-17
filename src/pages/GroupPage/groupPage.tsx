@@ -13,26 +13,15 @@ import GroupHeader from "../../components/GroupPage/groupPageHeader";
 import CourseCard from "../../components/GroupPage/courseCard";
 import CreateCourseModal from "../../components/GroupPage/courseCreateModal";
 
-
 const GroupPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
-  const [userRoleData, setUserRoleData] = useState<IGetUserRole>(initialGetRoleData);
+  const [userRoleData, setUserRoleData] =
+    useState<IGetUserRole>(initialGetRoleData);
   const [groupCourses, setGroupCourses] = useState<GroupCourses[]>([]);
-  const [users, setUsers] = useState<UsersModel[]>([]);
   const [groupName, setGroupName] = useState<string>("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const getUsers = async () => {
-    try {
-      const usersList = await AuthService.getUsers();
-      if (usersList) {
-        setUsers(usersList);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Ошибка при загрузке списка пользователей");
-    }
-  };
+
 
   const getUserRole = async () => {
     try {
@@ -99,7 +88,6 @@ const GroupPage: React.FC = () => {
           getGroupCourses();
         }
       } catch (error) {
-        console.error(error);
         toast.error("Ошибка при создании курса");
       }
     },
@@ -109,7 +97,6 @@ const GroupPage: React.FC = () => {
     getGroupCourses();
     getGroupsList();
     getUserRole();
-    getUsers();
   }, []);
 
   return (
@@ -119,13 +106,26 @@ const GroupPage: React.FC = () => {
       direction="column"
       justifyContent="center"
       alignItems="center"
-      style={{ marginTop: "100px" }}
+      style={{
+        width: "100%",
+        maxWidth: "1000px",
+        margin: "auto",
+        marginTop: "100px",
+      }}
     >
-      <GroupHeader groupName={groupName} isAdmin={userRoleData.isAdmin} onOpenModal={() => setIsCreateModalOpen(true)} />
+      <GroupHeader
+        groupName={groupName}
+        isAdmin={userRoleData.isAdmin}
+        onOpenModal={() => setIsCreateModalOpen(true)}
+      />
       {groupCourses.map((course) => (
         <CourseCard key={course.id} course={course} />
       ))}
-      <CreateCourseModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} formik={formik} users={users} />
+      {userRoleData.isAdmin && <CreateCourseModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        formik={formik}
+      />}
     </Grid>
   );
 };

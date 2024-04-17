@@ -6,6 +6,7 @@ import { login } from "../../store/user/userSlice";
 import { Grid, Typography } from "@mui/material";
 import { IUserLoginData } from "../../types/types";
 import LoginForm from "../../components/Login/loginForm";
+import { toast } from "react-toastify";
 
 const Authorization = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +22,7 @@ const Authorization = () => {
         navigate("/");
       }
     } catch (err) {
-      // обработка ошибок
+      toast.error("Ошибка при авторизации, проверьте свои данные еще раз!");
     }
   };
 

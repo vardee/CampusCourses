@@ -1,16 +1,42 @@
-import { Modal, Box, Typography, TextField, MenuItem, Select, Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Modal, Box, Typography, TextField, Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { UsersModel } from "../../types/types";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import ReactSelect from "react-select";
+import { AuthService } from "../../services/auth.service";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 interface CreateCourseModalProps {
   isOpen: boolean;
   onClose: () => void;
   formik: any;
-  users: UsersModel[];
 }
 
-const CreateCourseModal = ({ isOpen, onClose, formik, users }: CreateCourseModalProps) => {
+const CreateCourseModal = ({ isOpen, onClose, formik}: CreateCourseModalProps) => {
+
+  const [users, setUsers] = useState<UsersModel[]>([]);
+
+
+  const getUsers = async () => {
+    try {
+
+      const usersList = await AuthService.getUsers();
+      if (usersList) {
+        setUsers(usersList);
+    }
+    } catch (error) {
+      console.error(error);
+      toast.error("Ошибка при загрузке списка пользователей");
+    }
+  };
+
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -93,6 +119,30 @@ const CreateCourseModal = ({ isOpen, onClose, formik, users }: CreateCourseModal
             theme="snow"
             value={formik.values.requirements}
             onChange={(value) => formik.setFieldValue("requirements", value)}
+            modules={{
+              toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],       
+                ['blockquote', 'code-block'],
+      
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ script: 'sub' }, { script: 'super' }],     
+                [{ indent: '-1' }, { indent: '+1' }],         
+                [{ direction: 'rtl' }],                        
+                [{ size: ['small', false, 'large', 'huge'] }],  
+                [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      
+                [{ color: [] }, { background: [] }],          
+                [{ font: [] }],
+                [{ align: [] }],
+                ['clean'],                                         
+                ['link', 'image', 'video']                         
+              ],
+            }}
+            formats={[
+              'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 
+              'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video'
+            ]}
           />
           <Typography gutterBottom sx={{ mt: 2 }}>
             Аннотации(Обязательно)
@@ -101,24 +151,46 @@ const CreateCourseModal = ({ isOpen, onClose, formik, users }: CreateCourseModal
             theme="snow"
             value={formik.values.annotations}
             onChange={(value) => formik.setFieldValue("annotations", value)}
+            modules={{
+              toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],       
+                ['blockquote', 'code-block'],
+      
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ script: 'sub' }, { script: 'super' }],     
+                [{ indent: '-1' }, { indent: '+1' }],         
+                [{ direction: 'rtl' }],                        
+                [{ size: ['small', false, 'large', 'huge'] }],  
+                [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      
+                [{ color: [] }, { background: [] }],          
+                [{ font: [] }],
+                [{ align: [] }],
+                ['clean'],                                         
+                ['link', 'image', 'video']                         
+              ],
+            }}
+            formats={[
+              'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 
+              'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video'
+            ]}
           />
           <Typography gutterBottom sx={{ mt: 2 }}>
             Основной преподаватель курса(Выбор обязателен)
           </Typography>
-          <Select
-            value={formik.values.selectedTeacher}
-            onChange={formik.handleChange}
-            fullWidth
-            variant="outlined"
-            name="selectedTeacher"
-          >
-            {users.map((user) => (
-              <MenuItem key={user.id} value={user.id}>
-                {user.fullName}
-              </MenuItem>
-            ))}
-          </Select>
-
+          <ReactSelect
+            options={users.map((user) => ({
+              value: user.id,
+              label: user.fullName,
+            }))}
+            value={formik.values.selectedTeacher ? { value: formik.values.selectedTeacher, label: formik.values.selectedTeacherName } : null}
+            onChange={(selectedOption) => {
+              formik.setFieldValue("selectedTeacher", selectedOption?.value || "");
+              formik.setFieldValue("selectedTeacherName", selectedOption?.label || "");
+            }}
+            isClearable={true}
+          />
           <Button type="submit" variant="contained" sx={{ mt: 2 }}>
             Создать
           </Button>

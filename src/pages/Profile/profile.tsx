@@ -22,7 +22,9 @@ const Profile = () => {
           console.log(data);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Произошла ошибка при получении профиля");
+    }
   };
 
   const editProfileHandler = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +37,7 @@ const Profile = () => {
         console.log(getUserData);
       }
     } catch (error) {
-      toast.error("Произошла ошибка");
+      toast.error("Произошла ошибка при редактировании профиля");
     }
   };
   useEffect(() => {

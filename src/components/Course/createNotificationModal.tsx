@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   Box,
@@ -21,6 +21,12 @@ const CreateNotificationModal = ({
   onClose,
   formikCreateNotification,
 }: CreateNotificationModalProps) => {
+  useEffect(() => {
+    if (isOpen) {
+      formikCreateNotification.setFieldValue("text", "");
+    }
+  }, [isOpen]); 
+
   const handleChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     formikCreateNotification.setFieldValue("isImportant", event.target.checked);
   };
@@ -58,8 +64,8 @@ const CreateNotificationModal = ({
                   width: "100%",
                   fontSize: "1rem",
                   resize: "vertical",
-                  minWidth: "200px", 
-                  minHeight: "200px", 
+                  minWidth: "200px",
+                  minHeight: "200px",
                 }}
                 placeholder="Введите текст уведомления..."
                 {...formikCreateNotification.getFieldProps("text")}

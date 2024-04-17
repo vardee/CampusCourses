@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Modal,
   Box,
@@ -21,7 +22,7 @@ const ChangeTermStatusModal = ({
   formikStatus,
   studentId,
 }: ChangeTermStatusModalProps) => {
-  console.log(studentId)
+
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
@@ -50,7 +51,7 @@ const ChangeTermStatusModal = ({
             Выставить оценку студенту
           </Typography>
           <RadioGroup
-            value={formikStatus.values.mark}
+            value={formikStatus.values.mark || ""} 
             onChange={(event) =>
               formikStatus.setFieldValue("mark", event.target.value)
             }

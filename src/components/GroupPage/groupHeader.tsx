@@ -3,11 +3,9 @@ import { truncateText } from "../../helpers/truncateText";
 
 interface GroupHeaderProps {
   groupName: string;
-  isAdmin: boolean;
-  onOpenModal: () => void;
 }
 
-const GroupHeader = ({ groupName, isAdmin, onOpenModal }: GroupHeaderProps) => {
+const MyGroupHeader = ({ groupName }: GroupHeaderProps) => {
 
   return (
       <Grid
@@ -22,18 +20,10 @@ const GroupHeader = ({ groupName, isAdmin, onOpenModal }: GroupHeaderProps) => {
           gutterBottom
           style={{ maxWidth: "100%", fontSize: "clamp(1.5rem, 5vw, 2.5rem)", overflowWrap: "break-word" }}
         >
-          Группа - {truncateText(groupName, 30)}
+          {groupName}
         </Typography>
-        {isAdmin && (
-          <Button
-            variant="contained"
-            onClick={() => onOpenModal()}
-          >
-            Создать
-          </Button>
-        )}
       </Grid>
   );
 };
 
-export default GroupHeader;
+export default MyGroupHeader;

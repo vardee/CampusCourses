@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AuthService } from "../../services/auth.service";
 import { UsersModel } from "../../types/types";
+import { truncateText } from "../../helpers/truncateText";
+import ReactSelect from "react-select";
 
 interface AddTeacherToCourseModalProps {
   isOpen: boolean;
@@ -37,14 +39,14 @@ const AddTeacherToCourseModal = ({
         toast.error("Ошибка при загрузке списка пользователей");
       }
     };
-  
+
     if (isOpen) {
       getUsers();
     }
   }, [isOpen]);
-  
+
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onClose={onClose} disableEnforceFocus>
       <Box
         sx={{
           position: "fixed",
@@ -67,19 +69,27 @@ const AddTeacherToCourseModal = ({
           <Typography gutterBottom sx={{ mt: 2 }}>
             Основной преподаватель курса(Выбор обязателен)
           </Typography>
-          <Select
-            value={formikAddTeacher.values.selectedTeacher}
-            onChange={formikAddTeacher.handleChange}
-            fullWidth
-            variant="outlined"
-            name="selectedTeacher"
-          >
-            {users.map((user) => (
-              <MenuItem key={user.id} value={user.id}>
-                {user.fullName}
-              </MenuItem>
-            ))}
-          </Select>
+          <ReactSelect
+            options={users.map((user) => ({
+              value: user.id,
+              label: truncateText(user.fullName, 30),
+            }))}
+            value={{
+              value: formikAddTeacher.values.selectedTeacher,
+              label: formikAddTeacher.values.selectedTeacherName,
+            }}
+            onChange={(selectedOption) => {
+              formikAddTeacher.setFieldValue(
+                "selectedTeacher",
+                selectedOption?.value || ""
+              );
+              formikAddTeacher.setFieldValue(
+                "selectedTeacherName",
+                selectedOption?.label || ""
+              );
+            }}
+            isClearable={true}
+          />
 
           <Button
             type="submit"

@@ -5,21 +5,26 @@ import Grid from "@mui/material/Grid";
 import { IUserRegistrationData } from "../../types/types";
 import { validationRegisterSchema } from "../../helpers/validation.schemas";
 import { initialRegisterScheme } from "../InitialValues/initialValues";
-
+import { toast } from "react-toastify";
 
 interface RegistrationFormProps {
-    onSubmit: (values: IUserRegistrationData) => Promise<void>;
-  }
+  onSubmit: (
+    values: IUserRegistrationData
+  ) => Promise<void>;
+}
 
-
-
-const RegistrationForm= ({ onSubmit }: RegistrationFormProps) => {
+const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
   const formik = useFormik({
     initialValues: initialRegisterScheme,
     validationSchema: validationRegisterSchema,
     onSubmit: async (values) => {
-      await onSubmit(values as IUserRegistrationData);
+      if(values){
+        await onSubmit(values);
+      }
+     else {
+        toast.error("Что-то пошло не так");
+      }
     },
   });
 

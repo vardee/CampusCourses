@@ -20,6 +20,7 @@ import { AuthService } from "../../services/auth.service";
 import { useEffect, useState } from "react";
 import { IGetUserRole } from "../../types/types";
 import MenuIcon from "@mui/icons-material/Menu";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const isAuth = useAuth();
@@ -55,7 +56,7 @@ const Header = () => {
       }
     } catch (err: any) {
       const error = err.response?.data.message;
-      console.log(error);
+      toast.error("Ошибка при логауте");
     }
   };
 
@@ -68,12 +69,17 @@ const Header = () => {
           setUserRoleData(userRole);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Ошибка при получении роли пользователя");
+    }
   };
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setUserData(emailUser);
     getUserRole();
+    setIsLoading(false);
   }, [emailUser]);
 
   return (

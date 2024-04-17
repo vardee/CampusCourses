@@ -7,7 +7,10 @@ import CreateGroupModal from "../../components/Group/createModal";
 import EditGroupModal from "../../components/Group/editModal";
 import GroupCard from "../../components/Group/groupCard";
 import { AuthService } from "../../services/auth.service";
-import { initialDeleteGroupData, initialGetRoleData } from "../../components/InitialValues/initialValues";
+import {
+  initialDeleteGroupData,
+  initialGetRoleData,
+} from "../../components/InitialValues/initialValues";
 import DeleteGroupModal from "../../components/Group/deleteGroupModal";
 
 const GroupsPage = () => {
@@ -18,7 +21,7 @@ const GroupsPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editGroupName, setEditGroupName] = useState("");
   const [editGroupId, setEditGroupId] = useState("");
-  const [deleteGroupId, setDeleteGroupId] = useState("")
+  const [deleteGroupId, setDeleteGroupId] = useState("");
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
 
   const getUserRole = async () => {
@@ -70,11 +73,9 @@ const GroupsPage = () => {
       toast.success("Группа успешно отредактирована");
       getGroupsList();
     } catch (error) {
-      console.error("Ошибка при редактировании группы:", error);
       toast.error("Ошибка при редактировании группы");
     }
   };
-
 
   return (
     <Grid
@@ -83,7 +84,12 @@ const GroupsPage = () => {
       direction="column"
       justifyContent="center"
       alignItems="center"
-      style={{ marginTop: "100px" }}
+      style={{
+        width: "100%",
+        maxWidth: "1000px",
+        margin: "auto",
+        marginTop: "100px",
+      }}
     >
       <Grid
         container
@@ -118,7 +124,8 @@ const GroupsPage = () => {
               setEditGroupName(group.name);
               setEditGroupId(group.id);
             }}
-            onDelete={() => {setDeleteGroupModal(true)
+            onDelete={() => {
+              setDeleteGroupModal(true);
               setDeleteGroupId(group.id);
             }}
           />
@@ -127,7 +134,7 @@ const GroupsPage = () => {
       <DeleteGroupModal
         isOpen={deleteGroupModal}
         onClose={() => setDeleteGroupModal(false)}
-        id = {deleteGroupId}
+        id={deleteGroupId}
         getGroups={getGroupsList}
       />
       <CreateGroupModal

@@ -12,12 +12,14 @@ interface ChangeCourseStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   formikStatus: any;
+  status: string;
 }
 
 const ChangeCourseStatusModal = ({
   isOpen,
   onClose,
   formikStatus,
+  status
 }: ChangeCourseStatusModalProps) => {
   return (
     <Modal open={isOpen} onClose={onClose}>
@@ -44,26 +46,26 @@ const ChangeCourseStatusModal = ({
             Выберите статус курса:
           </Typography>
           <RadioGroup
-            value={formikStatus.values.status}
+            value={formikStatus.values.status || status} // Устанавливаем значение по умолчанию равным текущему статусу
             onChange={(event) =>
               formikStatus.setFieldValue("status", event.target.value)
             }
           >
-            <FormControlLabel
+            {(status !== "Finished" && status !== "Started") &&<FormControlLabel
               value="OpenForAssigning"
               control={<Radio />}
               label="Открыт для записи"
-            />
-            <FormControlLabel
+            />}
+            {status !== "Finished" && <FormControlLabel
               value="Started"
               control={<Radio />}
               label="В процессе обучения"
-            />
-            <FormControlLabel
+            />}
+            {<FormControlLabel
               value="Finished"
               control={<Radio />}
               label="Закрыт"
-            />
+            />}
           </RadioGroup>
 
           <Button
