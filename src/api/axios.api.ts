@@ -23,10 +23,10 @@ instance.interceptors.response.use(
     },
     (error) => {
         const { status } = error.response;
-        if (status === 403) {
-            window.location.href = '/';
+        if (status === 403 && !window.location.href.includes('authorization')) {
+            window.location.href = '/authorization';
         }
-        else if(status === 401){
+        else if(status === 401 && !window.location.href.includes('authorization')){
             window.location.href = '/authorization';
         }
         return Promise.reject(error);
