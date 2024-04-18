@@ -14,6 +14,7 @@ const Registration = () => {
 
   const onSubmit = async (values: IUserRegistrationData) => {
     try {
+      localStorage.clear();
       const data = await AuthService.registration(values);
       if (data) {
         setTokenFromLocalStorage("token", data.token);

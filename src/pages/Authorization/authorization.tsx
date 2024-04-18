@@ -14,6 +14,7 @@ const Authorization = () => {
 
   const onSubmit = async (values: IUserLoginData) => {
     try {
+      localStorage.clear();
       const data = await AuthService.login(values);
       if (data) {
         setTokenFromLocalStorage("token", data.token);
