@@ -17,4 +17,20 @@ instance.interceptors.request.use(
     }
 );
 
+instance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        const { status } = error.response;
+        if (status === 403) {
+            window.location.href = '/';
+        }
+        else if(status === 401){
+            window.location.href = '/authorization';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export { instance };
