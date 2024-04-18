@@ -6,7 +6,7 @@ import { AuthService } from "../../services/auth.service";
 import { IUserRegistrationData } from "../../types/types";
 import { setTokenFromLocalStorage } from "../../helpers/localstorage.helper";
 import { login } from "../../store/user/userSlice";
-
+import { toast } from "react-toastify";
 
 const Registration = () => {
   const dispatch = useAppDispatch();
@@ -22,38 +22,36 @@ const Registration = () => {
         navigate("/");
       }
     } catch (err) {
+      toast.error("Ошибка при регистрации");
     }
   };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "92vh",
-      }}
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ height: "92vh" }}
     >
-      <Grid container spacing={2} justifyContent="center">
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={6}
-          sx={{
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "20px",
-            maxWidth: "400px",
-            marginTop: "20px",
-          }}
-        >
-          <Typography variant="h4" gutterBottom>
-            Регистрация нового пользователя
-          </Typography>
-          <RegistrationForm onSubmit={onSubmit} />
-        </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={8}
+        md={6}
+        sx={{
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "20px",
+          maxWidth: "400px",
+          marginTop: "20px",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Регистрация нового пользователя
+        </Typography>
+        <RegistrationForm onSubmit={onSubmit} />
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

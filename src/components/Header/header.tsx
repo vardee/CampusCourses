@@ -46,7 +46,6 @@ const Header = () => {
 
   const logoutHandler = async () => {
     const token = localStorage.getItem("token");
-    console.log(token);
     try {
       if (token) {
         await AuthService.logout();
@@ -55,7 +54,6 @@ const Header = () => {
         navigate("/authorization");
       }
     } catch (err: any) {
-      const error = err.response?.data.message;
       toast.error("Ошибка при логауте");
     }
   };
@@ -70,17 +68,13 @@ const Header = () => {
         }
       }
     } catch (error) {
-      toast.error("Ошибка при получении роли пользователя");
     }
   };
-
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setUserData(emailUser);
     getUserRole();
-    setIsLoading(false);
-  }, [emailUser]);
+  }, [emailUser, userRoleData]);
 
   return (
     <AppBar position="fixed" color="inherit" sx={{ background: "white" }}>
@@ -97,36 +91,36 @@ const Header = () => {
               Кампусные курсы
             </Typography>
             {isAuth && (
-              <Button color="inherit" component={Link} to="/groups">
+              <Button color="inherit" component={Link} to="/groups" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                 Группы курсов
               </Button>
             )}
             {isAuth && userRoleData.isStudent && (
-              <Button color="inherit" component={Link} to="/mycourses">
+              <Button color="inherit" component={Link} to="/mycourses" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                 Мои курсы
               </Button>
             )}
             {isAuth && userRoleData.isTeacher && (
-              <Button color="inherit" component={Link} to="/courses/teaching">
+              <Button color="inherit" component={Link} to="/courses/teaching" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                 Преподаваемые курсы
               </Button>
             )}
             <Box sx={{ flexGrow: 1 }} />
             {isAuth ? (
               <>
-                <Button color="inherit" component={Link} to="/profile">
+                <Button color="inherit" component={Link} to="/profile" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                   {userData}
                 </Button>
-                <Button color="inherit" onClick={logoutHandler}>
+                <Button color="inherit" onClick={logoutHandler} sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                   Выход
                 </Button>
               </>
             ) : (
               <>
-                <Button component={Link} to="/registration" color="inherit">
+                <Button component={Link} to="/registration" color="inherit" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                   Регистрация
                 </Button>
-                <Button component={Link} to="/authorization" color="inherit">
+                <Button component={Link} to="/authorization" color="inherit" sx={{ marginTop: { xs: 0, sm: 0.5 } }}>
                   Вход
                 </Button>
               </>
@@ -134,7 +128,13 @@ const Header = () => {
           </>
         )}
         {isSmallScreen && (
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end"}}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
             <IconButton
               size="large"
               edge="start"

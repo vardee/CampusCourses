@@ -27,26 +27,30 @@ const Authorization = () => {
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center" style={{ height: "92vh" }}>
-      <Grid container spacing={2} justifyContent="center">
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={6}
-          sx={{
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "20px",
-            maxWidth: "400px",
-            marginTop: "20px",
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Авторизация
-          </Typography>
-          <LoginForm onSubmit={onSubmit} />
-        </Grid>
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ height: "92vh" }}
+    >
+      <Grid
+        item
+        xs={12}
+        sm={8}
+        md={6}
+        sx={{
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "20px",
+          width: "100%",
+          maxWidth: "400px",
+          marginTop: "20px",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Авторизация
+        </Typography>
+        <LoginForm onSubmit={onSubmit} />
       </Grid>
     </Grid>
   );

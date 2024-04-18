@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Button, Tabs, Tab } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { CourseService } from "../../services/course.service";
 import { toast } from "react-toastify";
@@ -154,11 +154,11 @@ const CoursePage = () => {
   ) => {
     setSecondTabValue(newValue);
   };
-  const formik = useCreateCourseFormik(id);
-  const formikTeacher = useEditTeacherCourseFormik(id);
-  const formikChangeStatus = useChangeStatusFormik(id);
-  const formikAddTeacherToCourse = useAddTeacherToCourseFormik(id);
-  const formikCreateNotification = useCreateNotificationFormik(id);
+  const formik = useCreateCourseFormik(id, setIsEditModalOpen, getCourseDetails);
+  const formikTeacher = useEditTeacherCourseFormik(id,setIsTeacherEditModalOpen, getCourseDetails);
+  const formikChangeStatus = useChangeStatusFormik(id,setIsChangeStatusModalOpen, getCourseDetails);
+  const formikAddTeacherToCourse = useAddTeacherToCourseFormik(id,setIsAddTeacherToCourse,getCourseDetails);
+  const formikCreateNotification = useCreateNotificationFormik(id,setIsCreateNotificationModal,getCourseDetails);
   return (
     <Grid
       container

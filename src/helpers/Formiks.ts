@@ -4,7 +4,7 @@ import { CourseService } from "../services/course.service";
 import { toast } from "react-toastify";
 import { validationCreateCourseSchema, validationEditCourseSchema } from "./validation.schemas";
 
-export const useCreateCourseFormik = (id: string | undefined) => {
+export const useCreateCourseFormik = (id: string | undefined, setIsEditModalOpen: (isOpen: boolean) => void, getCourseDetails: () => void) => {
   return useFormik({
     initialValues: {
       newCourseName: "",
@@ -28,6 +28,8 @@ export const useCreateCourseFormik = (id: string | undefined) => {
           mainTeacherId: values.selectedTeacher,
         };
         await CourseService.editNewCourse(id, editCourseData);
+        setIsEditModalOpen(false); 
+        getCourseDetails(); 
       } catch (error) {
         console.error(error);
         toast.error("Ошибка при создании курса");
@@ -36,7 +38,8 @@ export const useCreateCourseFormik = (id: string | undefined) => {
   });
 };
 
-export const useEditTeacherCourseFormik = (id: string | undefined) => {
+
+export const useEditTeacherCourseFormik = (id: string | undefined, setIsEditModalOpen: (isOpen: boolean) => void, getCourseDetails: () => void) => {
   return useFormik({
     initialValues: {
       requirements: "",
@@ -50,15 +53,16 @@ export const useEditTeacherCourseFormik = (id: string | undefined) => {
           annotations: values.annotations,
         };
         await CourseService.editTeacherNewCourse(id, editTeacherCourseData);
+        setIsEditModalOpen(false); 
+        getCourseDetails(); 
       } catch (error) {
-        console.error(error);
-        toast.error("Ошибка при создании курса");
+        toast.error("Ошибка при изменении курса");
       }
     },
   });
 };
 
-export const useChangeStatusFormik = (id: string | undefined) => {
+export const useChangeStatusFormik = (id: string | undefined,setIsEditModalOpen: (isOpen: boolean) => void, getCourseDetails: () => void) => {
   return useFormik({
     initialValues: {
       status: "",
@@ -69,6 +73,8 @@ export const useChangeStatusFormik = (id: string | undefined) => {
           status: values.status,
         };
         await CourseService.changeGroupStatus(id, changeStatus);
+        setIsEditModalOpen(false); 
+        getCourseDetails(); 
       } catch (error) {
         console.error(error);
         toast.error("Ошибка при изменении статуса курса");
@@ -77,7 +83,7 @@ export const useChangeStatusFormik = (id: string | undefined) => {
   });
 };
 
-export const useAddTeacherToCourseFormik = (id: string | undefined) => {
+export const useAddTeacherToCourseFormik = (id: string | undefined,setIsEditModalOpen: (isOpen: boolean) => void, getCourseDetails: () => void) => {
   return useFormik({
     initialValues: {
       selectedTeacher: "",
@@ -88,6 +94,8 @@ export const useAddTeacherToCourseFormik = (id: string | undefined) => {
           userId: values.selectedTeacher,
         };
         await CourseService.addTeacherToCourse(id, userId);
+        setIsEditModalOpen(false); 
+        getCourseDetails(); 
       } catch (error) {
         console.error(error);
         toast.error("Ошибка при добавлении преподавателя на курс");
@@ -96,7 +104,7 @@ export const useAddTeacherToCourseFormik = (id: string | undefined) => {
   });
 };
 
-export const useCreateNotificationFormik = (id: string | undefined) => {
+export const useCreateNotificationFormik = (id: string | undefined,setIsEditModalOpen: (isOpen: boolean) => void, getCourseDetails: () => void) => {
   return useFormik({
     initialValues: {
       text: "",
@@ -109,6 +117,8 @@ export const useCreateNotificationFormik = (id: string | undefined) => {
           isImportant: values.isImportant,
         };
         await CourseService.createNotification(id, notificationData);
+        setIsEditModalOpen(false); 
+        getCourseDetails(); 
       } catch (error) {
         console.error(error);
         toast.error("Ошибка при создании уведомления");

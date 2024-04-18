@@ -26,7 +26,17 @@ const CourseDetailsComponent: React.FC<CourseDetailsComponentProps> = ({
 }) => {
   
   return (
-    <>
+    <Grid
+    container
+    item
+    xs={12}
+    justifyContent="center"
+    alignItems="center"
+    style={{
+      width: "100%",
+      maxWidth: 1000,
+    }}
+    >
       <Grid
         container
         item
@@ -145,7 +155,7 @@ const CourseDetailsComponent: React.FC<CourseDetailsComponentProps> = ({
           />
         </Grid>
       </Grid>
-    </>
+      </Grid>
   );
 };
 

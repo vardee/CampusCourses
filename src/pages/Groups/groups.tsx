@@ -79,17 +79,12 @@ const GroupsPage = () => {
 
   return (
     <Grid
-      container
-      spacing={2}
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
-      style={{
-        width: "100%",
-        maxWidth: "1000px",
-        margin: "auto",
-        marginTop: "100px",
-      }}
+    container
+    spacing={2}
+    direction="column"
+    justifyContent="center"
+    alignItems="center"
+    style={{ marginTop: "100px" }}
     >
       <Grid
         container
